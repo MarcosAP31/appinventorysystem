@@ -1,0 +1,163 @@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Order</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Maintenance</a></li>
+                    <li class="breadcrumb-item active">Orders</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Order List</h3>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                            class="table row-border hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Order Date</th>
+                                    <th>Order State</th>
+                                    <th>Payment State</th>
+                                    <th>Total Price</th>
+                                    <th>User</th>
+                                    <th>File</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let order of orders">
+                                    <td>{{order.OrderDate | date:"dd/MM/yyyy hh:mm:ss a"}}</td>
+                                    <td>{{order.Status}}</td>
+                                    <td>{{order.PaymentStatus}}</td>
+                                    <td>S/.{{order.TotalAmount.toFixed(2)}}</td>
+                                    <td>{{order.username}}</td>
+                                    <ng-container *ngIf="order.PaymentStatus === 'Paid'; else blankSpace">
+                                        <td>
+                                            <a href="http://localhost:3000/build/uploads/documents/{{order.Path}}"
+                                                target="_blank">
+                                                <i class="far fa-file-pdf" style="color:red; font-size:35px;"></i>
+                                            </a>
+                                        </td>
+                                    </ng-container>
+                                    <ng-template #blankSpace>
+                                        <td></td>
+                                    </ng-template>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button (click)="edit(order.OrderId)" type="button" class="btn btn-warning"
+                                                data-toggle="modal" data-target="#modal-defaultorder">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button (click)="delete(order.OrderId)" type="button"
+                                                class="btn btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-defaultorder" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form ngNativeValidate [formGroup]="formOrder" (ngSubmit)="submit()">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Editing order</h4>
+                        <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="selectStatus">Order State</label>
+                            <select name="Status" class="form-control" formControlName="Status">
+                                <option value="" disabled selected hidden>Select an state</option>
+                                <option value="In progress">In progress</option>
+                                <option value="Despachado">Dispatched</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectPaymentStatus">Payment State</label>
+                            <select name="PaymentStatus" class="form-control" formControlName="PaymentStatus"
+                                (change)="onPaymentStateChange()">
+                                <option value="" disabled selected hidden>Select an state</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Paid">Paid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputTotalAmount">Total Price</label>
+                            <input readonly type="text" class="form-control" Name="" formControlName="TotalAmount"
+                                class="form-control" placeholder="Enter total price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectUser">Username</label>
+                            <select readonly name="User" class="form-control" formControlName="UserId">
+                                <option value="" disabled selected hidden>Selecciona un usuario</option>
+                                <option *ngFor="let user of users" [value]="user.UserId">{{user.Username}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                        class="table row-border hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Amount</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let orderxitem of orderxitems">
+                                <td>{{orderxitem.ItemId}}</td>
+                                <td>{{orderxitem.menuitemName}}</td>
+                                <td>S/.{{orderxitem.menuitemPrice.toFixed(2)}}</td>
+                                <td>{{orderxitem.Quantity}}</td>
+                                <td>S/.{{orderxitem.Subtotal.toFixed(2)}}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>S/.{{this.totalprice.toFixed(2)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--<div *ngIf="selectedPaymentState === 'Paid'" class="text-right mt-3">
+                        <button type="button" class="btn btn-success" (click)="generateTicket('path')">
+                            Generate Ticket
+                        </button>
+                    </div>-->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
+                            Close</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                            Save</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</section>
