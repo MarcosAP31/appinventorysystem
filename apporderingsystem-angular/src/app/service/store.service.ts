@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { MenuCategory } from '../models/menucategory';
-import { MenuItem } from '../models/menuitem';
 import { Order } from '../models/order';
 import { OrderXItem } from '../models/orderxitem';
 import { User } from '../models/user';
@@ -29,10 +27,7 @@ export class StoreService {
   apiinventariodetalle='https://localhost:7000/api/InventarioDetalle'
   //token='lrgWUpXa4Zu0cygU3NIL';*/
   //url='https://www.covermanager.com/api/restaurant/get_reservs_basic/'+this.token;
-  constructor(public http: HttpClient) {
-
-    this.headers.append("Authorization", "Bearer " + localStorage.getItem("token"))
-  }
+  constructor(public http: HttpClient) { }
 
   //Products
   getProducts(token:any) {
@@ -86,12 +81,19 @@ export class StoreService {
     token=token.replace(caracter1,'%2F')
     return this.http.get(`${this.API_URI}/User/${userId}?token=${token}`);
   }
+  getUserByEmail(email: string,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/User/email/${email}?token=${token}`);
+  }
   insertUser(user: User,token:any) {
     let caracter=new RegExp('[+]','g')
     token=token.replace(caracter,'%2B')
     let caracter1=new RegExp('[/]','g')
     token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/User/insert?token='}${token}`, user);
+    return this.http.post(`${this.API_URI}/User/insert?token=${token}`, user);
   }
   updateUser(user:User, token:any) {
     let caracter=new RegExp('[+]','g')
@@ -116,7 +118,7 @@ export class StoreService {
     token=token.replace(caracter,'%2B')
     let caracter1=new RegExp('[/]','g')
     token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/User/vallogin?token=${token}`, token);
+    return this.http.post(`${this.API_URI}/User/validatelogin?token=${token}`, token);
   }
   //Orders
   getOrders() {

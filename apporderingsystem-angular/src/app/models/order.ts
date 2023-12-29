@@ -1,9 +1,11 @@
 export class Order{
     OrderId!:number;
-    UserId!:number;
-    OrderDate!:string;
-    TotalAmount!:number;
+    OrderDate!:Date;
+    ReceptionDate!:Date;
+    DispatchedDate!:Date;
+    DeliveryDate!:Date;
+    TotalPrice!:number;
+    Seller!:string;
+    DeliverMan!:string;
     Status!:string;
-    PaymentStatus!:string;
-    Path!:string;
 }

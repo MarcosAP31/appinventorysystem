@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit {
   show: boolean = false;
   title = 'fileUpload';
   formLogin: FormGroup;
-  formUser: FormGroup;
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
@@ -29,14 +28,6 @@ export class LoginComponent implements OnInit {
     this.formLogin = this.form.group({
       email: [''],
       password: ['']
-    });
-    this.formUser = this.form.group({
-      Name: [''],
-      LastName: [''],
-      Phone: [''],
-      Email: [''],
-      Username: [''],
-      Password: ['']
     });
   }
   // Método para mostrar el mensaje de carga
@@ -115,14 +106,14 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('token', token);
   
           // Verify the token on the server
-          this.storeService.verifyToken(token).subscribe(
+          this.storeService.validateLogin(token).subscribe(
             () => {
               this.cookieService.set('token_access', token);
               // Get user information using the authenticated email
-              this.storeService.getUserByEmail(this.formLogin.value.email).subscribe(
+              this.storeService.getUserByEmail(this.formLogin.value.email,token).subscribe(
                 (res: any) => {
                   // Store user information in local storage
-                  localStorage.setItem('username', res.Username);
+                  localStorage.setItem('name', res.Name);
                   localStorage.setItem('userId', res.UserId);
                 },
                 (error: any) => {
@@ -159,79 +150,5 @@ export class LoginComponent implements OnInit {
       }
     );
   }
-  // Método para guardar o actualizar un usuario
-  submitForm() {
-    var user = new User();
-    user.Name = this.formUser.value.Name;
-    user.LastName = this.formUser.value.LastName;
-    user.Phone = this.formUser.value.Phone;
-    user.Email = this.formUser.value.Email;
-    user.Username = this.formUser.value.Username;
-    user.Password = this.formUser.value.Password;
-    Swal.fire({
-      title: 'Confirmación',
-      text: 'Seguro de guardar el registro?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: `Guardar`,
-      denyButtonText: `Cancelar`,
-      allowOutsideClick: false,
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Guardando registro',
-          text: 'Cargando...',
-        });
-        Swal.showLoading();
-        
-        this.storeService.insertUser(user).subscribe(() => {
-          
-          
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'success',
-            title: 'Éxito',
-            text: 'Se ha guardado correctamente!',
-          }).then((result) => {
-            window.location.reload();
-          });
-        }, err => {
-          console.log(err);
-          if (err.Name == "HttpErrorResponse") {
-            Swal.fire({
-              allowOutsideClick: false,
-              icon: 'error',
-              title: 'Error al conectar',
-              text: 'Error de comunicación con el servidor',
-            });
-            return;
-          }
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'error',
-            title: err.Name,
-            text: err.message,
-          });
-        });
-      } else if (result.isDenied) {
 
-      }
-
-    });
-  }
-
-  // Método para cerrar el modal
-  closeModal() {
-    this.formUser = this.form.group({
-      Name: [''],
-      LastName: [''],
-      Phone: [''],
-      Email: [''],
-      Username: [''],
-      Password: ['']
-    });
-  }
 }

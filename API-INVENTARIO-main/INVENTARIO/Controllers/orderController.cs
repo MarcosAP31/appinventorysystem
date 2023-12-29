@@ -121,7 +121,7 @@ namespace INVENTARIO.Controllers
                     }
                     else
                     {
-                        var order = await context.Order.FirstOrDefaultAsync(res => res.OrderDate.Equals(orderDate));
+                        var order = await context.Order.FindAsync(orderDate);
 
                         if (order == null)
                         {

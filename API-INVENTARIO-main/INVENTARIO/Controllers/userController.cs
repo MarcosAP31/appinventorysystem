@@ -29,7 +29,7 @@ namespace INVENTARIO.Controllers
         public async Task<IActionResult> getUserAsync(User user)
         {
 
-            
+
             using (var context = new SampleContext(defaultConnection))
             {
                 var result = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
@@ -42,7 +42,7 @@ namespace INVENTARIO.Controllers
                 return Ok(cifrado);
             }
         }
-        [HttpPost("vallogin")]
+        [HttpPost("validatelogin")]
         public async Task<IActionResult> validarlogin(string token)
         {
             var vtoken = _cifrado.validarToken(token);
@@ -94,7 +94,7 @@ namespace INVENTARIO.Controllers
             }
 
         }
-   
+
         [HttpGet("{userId}")]
         public async Task<ActionResult<User>> getUserById(int userId, string token)
         {
@@ -133,7 +133,7 @@ namespace INVENTARIO.Controllers
                 }
             }
         }
-        [HttpGet("{code}")]
+        [HttpGet("code/{code}")]
         public async Task<ActionResult<User>> getUserByCode(string code, string token)
         {
             var vtoken = _cifrado.validarToken(token);
@@ -157,7 +157,7 @@ namespace INVENTARIO.Controllers
                     }
                     else
                     {
-                        var _user = await context.User.FindAsync(code);
+                        var _user = await context.User.FirstOrDefaultAsync(res => res.Code.Equals(code));
 
                         if (_user == null)
                         {
@@ -171,7 +171,44 @@ namespace INVENTARIO.Controllers
                 }
             }
         }
+        [HttpGet("email/{email}")]
+        public async Task<ActionResult<User>> getUserByEmail(string email, string token)
+        {
+            var vtoken = _cifrado.validarToken(token);
 
+            if (vtoken == null)
+            {
+                return Problem("The token isn't valid!");
+            }
+            using (var context = new SampleContext(defaultConnection))
+            {
+                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                if (user == null)
+                {
+                    return Problem("The user entered isn't valid");
+                }
+                else
+                {
+                    if (context.User == null)
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        var _user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(email));
+
+                        if (_user == null)
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            return _user;
+                        }
+                    }
+                }
+            }
+        }
         [HttpPut("update")]
         public async Task<ActionResult> PutUser(User _user, string token)
         {
@@ -190,7 +227,7 @@ namespace INVENTARIO.Controllers
                 }
                 else
                 {
-                    var query = await context.User.FirstOrDefaultAsync(res => res.UserId.Equals(_user.UserId));
+                    var query = await context.User.FindAsync(_user.UserId);
                     if (query == null)
                     {
                         return Problem("No record found");
@@ -228,19 +265,9 @@ namespace INVENTARIO.Controllers
                 }
                 else
                 {
-                    if (param.Length == 0)
-                    {
-                        return Problem("There is no user to insert");
-                    }
-                    else
-                    {
-                        
-                            context.User.Add(_user);
-                            await context.SaveChangesAsync();
-
-                        return Ok("Was updated successfully");
-                    }
-
+                    context.User.Add(_user);
+                    await context.SaveChangesAsync();
+                    return Ok("Was updated successfully");
                 }
             }
 

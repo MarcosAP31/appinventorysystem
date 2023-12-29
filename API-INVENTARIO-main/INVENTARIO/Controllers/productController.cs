@@ -25,7 +25,7 @@ namespace INVENTARIO.Controllers
             _context = context_;
             _cifrado = cifrado_;
         }
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> getProducts(string token)
         {
@@ -121,7 +121,7 @@ namespace INVENTARIO.Controllers
                     }
                     else
                     {
-                        var product = await context.Product.FindAsync(sku);
+                        var product = await context.Product.FirstOrDefaultAsync(res => res.SKU.Equals(sku));
 
                         if (product == null)
                         {
@@ -196,17 +196,9 @@ namespace INVENTARIO.Controllers
                 }
                 else
                 {
-                    if (param.Length == 0)
-                    {
-                        return Problem("There is no user to insert");
-                    }
-                    else
-                    {
-                        context.Product.Add(product);
-                        await context.SaveChangesAsync();
-                        return Ok("Was updated successfully");
-                    }
-
+                    context.Product.Add(product);
+                    await context.SaveChangesAsync();
+                    return Ok("Was updated successfully");
                 }
             }
 

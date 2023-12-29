@@ -27,8 +27,6 @@ import { CookieService } from 'ngx-cookie-service';
     InventarioComponent,
     UserComponent,
     ProductComponent,
-    MenuCategoryComponent,
-    MenuItemComponent,
     InicioComponent,
     OrderComponent,
     LoginComponent

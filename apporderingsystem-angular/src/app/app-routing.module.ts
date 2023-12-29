@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserComponent } from './modules/user/user.component';
 import { ProductComponent } from './modules/product/product.component';
-import { MenuCategoryComponent } from './modules/menucategory/menucategory.component';
-import { MenuItemComponent } from './modules/menuitem/menuitem.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { OrderComponent } from './modules/order/order.component';
 import { LoginComponent } from './pages/login/login.component';
@@ -32,8 +30,6 @@ const routes: Routes = [
           { path: 'user', component: UserComponent, canActivate: [SecurityGuard] },
           { path: 'product', component: ProductComponent, canActivate: [SecurityGuard] },
           { path: 'order', component: OrderComponent, canActivate: [SecurityGuard] },
-          { path: 'menucategory', component: MenuCategoryComponent, canActivate: [SecurityGuard] },
-          { path: 'menuitem', component: MenuItemComponent, canActivate: [SecurityGuard] },
         ]
       },
       {
