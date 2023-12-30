@@ -202,7 +202,11 @@ export class StoreService {
     return this.http.get(`${this.API_URI}/OrderXProduct/orderid/${orderId}?token=${token}`);
   }
   getTotalPriceByOrder(id:number){
-    return this.http.get(`${this.API_URI}/orderxproduct/totalprice/${id}`);
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/OrderXProduct/totalprice/${orderId}?token=${token}`);
   }
   /*
     getMenuCategory(id: any,token:any): Observable<any> {

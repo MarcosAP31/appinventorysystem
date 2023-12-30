@@ -141,7 +141,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("totalprice/{orderId}")]
-        public async Task<ActionResult<decimal>> GetTotalPriceByOrderId(int orderId, string token)
+        public async Task<ActionResult<float>> GetTotalPriceByOrderId(int orderId, string token)
         {
             try
             {
@@ -162,9 +162,20 @@ namespace INVENTARIO.Controllers
                         return Problem("The user entered isn't valid");
                     }
 
-                    var orderxproductList = await context.OrderXProduct
-                        .Where(op => op.OrderId == orderId)
-                        .ToListAsync();
+                    var orderxproductList = await (from orderxproduct in context.OrderXProduct
+
+                                         join product in context.Product on orderxproduct.ProductId equals product.ProductId
+                                         where orderxproduct.OrderId==orderId
+                                         select new
+                                         {
+                                             orderxproduct.OrderXProductId,
+                                             orderxproduct.OrderId,
+                                             orderxproduct.ProductId,
+                                             orderxproduct.Quantity,
+                                             orderxproduct.Subtotal,
+                                             product.Name,
+                                             product.Price
+                                         }).ToListAsync();
 
                     if (orderxproductList == null || !orderxproductList.Any())
                     {
@@ -172,7 +183,7 @@ namespace INVENTARIO.Controllers
                     }
 
                     // Calculate total price
-                    decimal totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
+                    float? totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
 
                     return Ok(totalPrice);
                 }
@@ -209,7 +220,7 @@ namespace INVENTARIO.Controllers
                     }
                     else
                     {
-                        query=orderxproduct;
+                        query = orderxproduct;
                         context.SaveChanges();
                         return Ok(query);
                     }
