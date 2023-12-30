@@ -66,7 +66,7 @@ export class UserComponent implements OnInit {
 
   // Método para obtener los usuarios
   get() {
-    this.storeService.getUsers().subscribe(response => {
+    this.storeService.getUsers(localStorage.getItem('token')).subscribe(response => {
       this.users = response;
       this.dtTrigger.next(0);
     });
@@ -84,7 +84,7 @@ export class UserComponent implements OnInit {
   // Método para editar un usuario
   edit(userid: any) {
     this.creating = false;
-    this.storeService.getUser(userid).subscribe(
+    this.storeService.getUser(userid,localStorage.getItem('token')).subscribe(
       (response: any) => {
         this.id = response.UserId;
         this.formUser.setValue({
@@ -128,7 +128,7 @@ export class UserComponent implements OnInit {
           text: 'Cargando...',
         });
         Swal.showLoading();
-        this.storeService.deleteUser(id).subscribe(r => {
+        this.storeService.deleteUser(id,localStorage.getItem('token')).subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -170,7 +170,7 @@ export class UserComponent implements OnInit {
     user.Email = this.formUser.value.Email;
     user.Username = this.formUser.value.Username;
     user.Password = this.formUser.value.Password;
-    var solicitud = this.creating ? this.storeService.insertUser(user) : this.storeService.updateUser(this.id, user);
+    var solicitud = this.creating ? this.storeService.insertUser(user,localStorage.getItem('token')) : this.storeService.updateUser(user,localStorage.getItem('token'));
     solicitud.subscribe((r: any) => {
       if (this.creating == true && r.message === 'User with the same username or email already exists') {
         Swal.fire({

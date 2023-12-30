@@ -27,7 +27,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderXProduct>>> getOrderXProducts(string token)
+        public async Task<ActionResult<IEnumerable<OrderXProduct>>> GetOrderXProducts(string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -58,6 +58,7 @@ namespace INVENTARIO.Controllers
             }
 
         }
+
 
         [HttpGet("{orderxproductId}")]
         public async Task<ActionResult<OrderXProduct>> getOrderXProductById(int orderxproductId, string token)
@@ -97,7 +98,92 @@ namespace INVENTARIO.Controllers
                 }
             }
         }
-        
+
+        [HttpGet("orderid/{orderId}")]
+        public async Task<ActionResult<IEnumerable<OrderXProduct>>> GetOrderXProductsByOrderId(int orderId, string token)
+        {
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
+
+                if (vtoken == null)
+                {
+                    return Problem("The token isn't valid!");
+                }
+
+                using (var context = new SampleContext(defaultConnection))
+                {
+                    var user = await context.User
+                        .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var orderxproductList = await context.OrderXProduct
+                        .Where(op => op.OrderId == orderId)
+                        .ToListAsync();
+
+                    if (orderxproductList == null || !orderxproductList.Any())
+                    {
+                        return NotFound("No order x products found for the specified orderId.");
+                    }
+
+                    return Ok(orderxproductList);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("totalprice/{orderId}")]
+        public async Task<ActionResult<decimal>> GetTotalPriceByOrderId(int orderId, string token)
+        {
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
+
+                if (vtoken == null)
+                {
+                    return Problem("The token isn't valid!");
+                }
+
+                using (var context = new SampleContext(defaultConnection))
+                {
+                    var user = await context.User
+                        .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var orderxproductList = await context.OrderXProduct
+                        .Where(op => op.OrderId == orderId)
+                        .ToListAsync();
+
+                    if (orderxproductList == null || !orderxproductList.Any())
+                    {
+                        return NotFound("No order x products found for the specified orderId.");
+                    }
+
+                    // Calculate total price
+                    decimal totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
+
+                    return Ok(totalPrice);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPut("update")]
         public async Task<ActionResult> PutOrderXProduct(OrderXProduct orderxproduct, string token)
         {
@@ -137,7 +223,7 @@ namespace INVENTARIO.Controllers
         // POST: api/user
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("insert")]
-        public async Task<ActionResult<OrderXProduct>> PostOrderXProduct(OrderXProduct[] param, string token)
+        public async Task<ActionResult<OrderXProduct>> PostOrderXProduct(OrderXProduct orderxproduct, string token)
         {
             var vtoken = _cifrado.validarToken(token);
             if (vtoken == null)
@@ -153,19 +239,9 @@ namespace INVENTARIO.Controllers
                 }
                 else
                 {
-                    if (param.Length == 0)
-                    {
-                        return Problem("There is no user to insert");
-                    }
-                    else
-                    {
-                        foreach (OrderXProduct orderxproduct in param)
-                        {
-                            context.OrderXProduct.Add(orderxproduct);
-                            await context.SaveChangesAsync();
-                        }
-                        return Ok("Was updated successfully");
-                    }
+                    context.OrderXProduct.Add(orderxproduct);
+                    await context.SaveChangesAsync();
+                    return Ok("Was updated successfully");
                 }
             }
 

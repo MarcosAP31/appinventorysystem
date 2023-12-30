@@ -214,7 +214,22 @@
                                 class="form-control" placeholder="Enter delivery date">
                         </div>
                         <div class="form-group">
-                            <label for="selectState">Estado</label>
+                            <label for="inputTotalPrice">Total Price</label>
+                            <input readonly type="text" class="form-control" Name="" formControlName="TotalPrice"
+                                class="form-control" placeholder="Enter total price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputSeller">Seller</label>
+                            <input readonly type="text" class="form-control" Name="" formControlName="Seller"
+                                class="form-control" placeholder="Enter seller" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDeliveryMan">DeliveryMan</label>
+                            <input readonly type="text" class="form-control" Name="" formControlName="DeliveryMan"
+                                class="form-control" placeholder="Enter delivery man" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectState">Status</label>
                             <select name="State" class="form-control" formControlName="State" #selectState>
                                 <option value="" disabled selected hidden>Select a state</option>
                                 <option value="To attend">To attend</option>
@@ -222,11 +237,6 @@
                                 <option value="In delivery">In delivery</option>
                                 <option value="Received">Received</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputTotalPrice">Total Price</label>
-                            <input readonly type="text" class="form-control" Name="" formControlName="TotalPrice"
-                                class="form-control" placeholder="Enter total price" required>
                         </div>
                     </div>
                     <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"

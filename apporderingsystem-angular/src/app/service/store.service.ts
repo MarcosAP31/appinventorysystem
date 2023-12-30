@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order } from '../models/order';
-import { OrderXItem } from '../models/orderxitem';
+import { OrderXProduct } from '../models/orderxproduct';
 import { User } from '../models/user';
 import { Product } from '../models/product';
 @Injectable({
@@ -120,44 +120,89 @@ export class StoreService {
     token=token.replace(caracter1,'%2F')
     return this.http.post(`${this.API_URI}/User/validatelogin?token=${token}`, token);
   }
+
   //Orders
-  getOrders() {
-    return this.http.get(`${this.API_URI}/order`);
+  getOrders(token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/Order?token=${token}`);
   }
-  getOrder(id: number) {
-    return this.http.get(`${this.API_URI}/order/${id}`);
+  getOrder(orderId: number,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/Order/${orderId}?token=${token}`);
   }
-  insertOrder(order: Order) {
-    return this.http.post(`${this.API_URI}/order`, order);
+  insertOrder(order: Order,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.post(`${this.API_URI}/Order/insert?token=${token}`, order);
   }
-  updateOrder(id: number, updatedOrder: Order) {
-    return this.http.put(`${this.API_URI}/order/${id}`, updatedOrder);
+  updateOrder(order:Order, token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.put(`${this.API_URI}/Order/update?token=${token}`, order);
   }
-  deleteOrder(id: number): Observable<any> {
-    return this.http.delete(`${this.API_URI}/order/${id}`);
+  deleteOrder(orderId: number,token:any): Observable<any> {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.delete(`${this.API_URI}/Order/${orderId}?token=${token}`);
   }
 
-  //OrderXItems
-  getOrderXItems() {
-    return this.http.get(`${this.API_URI}/orderxitem`);
+  //OrderXProducts
+  getOrderXProducts(token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/OrderXProduct?token=${token}`);
   }
-  getOrderXItem(id: number) {
-    return this.http.get(`${this.API_URI}/orderxitem/${id}`);
+  getOrderXProduct(orderxproductId: number,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${token}`);
   }
-  insertOrderXItem(orderxitem: OrderXItem) {
-    return this.http.post(`${this.API_URI}/orderxitem`, orderxitem);
+  insertOrderXProduct(orderxproduct: OrderXProduct,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.post(`${this.API_URI}/OrderXProduct/insert?token=${token}`, orderxproduct);
   }
-  updateOrderXItem(id: number, updatedOrderXItem: OrderXItem) {
-    return this.http.put(`${this.API_URI}/orderxitem/${id}`, updatedOrderXItem);
+  updateOrderXProduct(orderxproduct: OrderXProduct,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.put(`${this.API_URI}/OrderXProduct/update?token=${token}`, orderxproduct);
   }
-  deleteOrderXItem(id: number): Observable<any> {
-    return this.http.delete(`${this.API_URI}/orderxitem/${id}`);
+  deleteOrderXProduct(orderxproductId: number,token:any): Observable<any> {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.delete(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${token}`);
   }
-  getItemsByOrder(id:number) {
-    return this.http.get(`${this.API_URI}/orderxitem/orderid/${id}`);
+  getProductsByOrder(orderId:number,token:any) {
+    let caracter=new RegExp('[+]','g')
+    token=token.replace(caracter,'%2B')
+    let caracter1=new RegExp('[/]','g')
+    token=token.replace(caracter1,'%2F')
+    return this.http.get(`${this.API_URI}/OrderXProduct/orderid/${orderId}?token=${token}`);
   }
   getTotalPriceByOrder(id:number){
-    return this.http.get(`${this.API_URI}/orderxitem/totalprice/${id}`);
+    return this.http.get(`${this.API_URI}/orderxproduct/totalprice/${id}`);
   }
   /*
     getMenuCategory(id: any,token:any): Observable<any> {

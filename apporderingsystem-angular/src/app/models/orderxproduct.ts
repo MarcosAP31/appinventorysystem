@@ -1,4 +1,4 @@
-export class OrderXItem{
+export class OrderXProduct{
     OrderXProductId!:number;
     OrderId!:number;
     ProductId!:number;
