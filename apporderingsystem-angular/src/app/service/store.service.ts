@@ -194,14 +194,14 @@ export class StoreService {
     token=token.replace(caracter1,'%2F')
     return this.http.delete(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${token}`);
   }
-  getProductsByOrder(orderId:number,token:any) {
+  getProductsByOrderId(orderId:number,token:any) {
     let caracter=new RegExp('[+]','g')
     token=token.replace(caracter,'%2B')
     let caracter1=new RegExp('[/]','g')
     token=token.replace(caracter1,'%2F')
     return this.http.get(`${this.API_URI}/OrderXProduct/orderid/${orderId}?token=${token}`);
   }
-  getTotalPriceByOrder(id:number){
+  getTotalPriceByOrderId(orderId:number,token:any){
     let caracter=new RegExp('[+]','g')
     token=token.replace(caracter,'%2B')
     let caracter1=new RegExp('[/]','g')
