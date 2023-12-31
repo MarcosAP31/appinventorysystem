@@ -209,6 +209,37 @@ namespace INVENTARIO.Controllers
                 }
             }
         }
+        [HttpGet("role/{userId}")]
+        public async Task<ActionResult<User>> getUserByRole(string role, string token)
+        {
+            var vtoken = _cifrado.validarToken(token);
+
+            if (vtoken == null)
+            {
+                return Problem("The token isn't valid!");
+            }
+            using (var context = new SampleContext(defaultConnection))
+            {
+                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                if (user == null)
+                {
+                    return Problem("The user entered isn't valid");
+                }
+                else
+                {
+                    var userList = await context.User
+                        .Where(u => u.Role == role)
+                        .ToListAsync();
+
+                    if (userList == null || !userList.Any())
+                    {
+                        return NotFound("No order x products found for the specified orderId.");
+                    }
+
+                    return Ok(userList);
+                }
+            }
+        }
         [HttpPut("update")]
         public async Task<ActionResult> PutUser(User _user, string token)
         {

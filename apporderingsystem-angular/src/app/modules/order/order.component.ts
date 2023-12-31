@@ -22,9 +22,10 @@ export class OrderComponent implements OnInit {
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
+  users:any;
   totalprice: number = 0;
   quantityorder: number = 0;
-  orderxproducts: any[] = [];
+  orderxproducts: any;
   elements: { productid: number, sku: string, product: string, price: number, quantity: number }[] = [];
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
@@ -93,6 +94,9 @@ export class OrderComponent implements OnInit {
     this.storeService.getProducts(localStorage.getItem('token')).subscribe(response => {
       this.products = response;
     })
+    this.storeService.getUserByRole('Repartidor',localStorage.getItem('token')).subscribe(r=>{
+      this.users=r;
+    })
   }
 
   ngOnInit(): void {
@@ -148,7 +152,7 @@ export class OrderComponent implements OnInit {
     console.log(this.elements)
     this.creating = false;
     this.storeService.getOrder(orderid,localStorage.getItem('token')).subscribe((response: any) => {
-      if (response.State == "Recibido") {
+      if (response.State == "Received") {
         this.selectState.nativeElement.disabled = true;
       } else {
         this.selectState.nativeElement.disabled = false;
@@ -164,23 +168,10 @@ export class OrderComponent implements OnInit {
         DeliveryMan: response.DeliveryMan,
         State: response.State
       });
-      this.storeService.getOrderXProductByOrderId(orderid).subscribe((orderxproducts: any) => {
-        console.log(orderxproducts)
-        for (const orderxproduct of orderxproducts) {
-          this.storeService.getProduct(orderxproduct.ProductId).subscribe((res: any) => {
-            this.finalprice = this.finalprice + (orderxproduct.Quantity * res.SalePrice);
-            this.elements.push({
-              productid: orderxproduct.ProductId,
-              product: res.Description,
-              price: res.SalePrice,
-              quantity: orderxproduct.Quantity,
-              ubicationid: 0
-            });
-          })
-
-        }
-      })
     });
+    this.storeService.getProductsByOrderId(orderid,localStorage.getItem('token')).subscribe(r=> {
+        this.orderxproducts=r;
+    })
 
     this.formEditOrder = this.form.group({
       OrderDate: [''],
@@ -214,7 +205,7 @@ export class OrderComponent implements OnInit {
         });
         Swal.showLoading();
 
-        this.storeService.deleteOrder(orderid).subscribe(r => {
+        this.storeService.deleteOrder(orderid,localStorage.getItem('token')).subscribe(r => {
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
@@ -255,14 +246,18 @@ export class OrderComponent implements OnInit {
     for (const element of this.elements) {
       this.finalprice = this.finalprice + (element.quantity * element.price);
     }
-    var ubid = 0;
-    var order = new Order();
+    this.storeService.getUser(Number(localStorage.getItem('userId')),localStorage.getItem('token')).subscribe((user:any)=>{
+      var order = new Order();
     order.OrderDate = this.todayWithPipe;
-    order.State = "Pendiente";
+    order.ReceptionDate = this.formOrder.value.ReceptionDate;
+    order.DispatchedDate = this.formOrder.value.DispatchedDate;
     order.DeliveryDate = this.formOrder.value.DeliveryDate;
     order.TotalPrice = this.finalprice;
-    order.ClientId = this.formOrder.value.ClientId;
-    order.UserId = Number(localStorage.getItem('userId'));
+    order.Seller = this.formOrder.value.Seller;
+    order.DeliveryMan = this.formOrder.value.Seller;
+    order.Status = "Por atender";
+    })
+    
     if (!this.creating) {
       order.OrderId = this.orderid;
     }
