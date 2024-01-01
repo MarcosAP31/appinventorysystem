@@ -9,8 +9,6 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UserComponent } from './modules/user/user.component';
 import { ProductComponent } from './modules/product/product.component';
 import { OrderComponent } from './modules/order/order.component';
-import { MenuCategoryComponent } from './modules/menucategory/menucategory.component'
-import { MenuItemComponent } from './modules/menuitem/menuitem.component'
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AppRoutingModule } from './app-routing.module';

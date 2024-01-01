@@ -2,12 +2,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Usuarios</h1>
+                <h1>Users</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
-                    <li class="breadcrumb-item active">Usuarios</li>
+                    <li class="breadcrumb-item"><a href="#">Maintenance</a></li>
+                    <li class="breadcrumb-item active">Users</li>
                 </ol>
             </div>
         </div>
@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
-                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo Usuario</button>
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; New User</button>
                 <br><br>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Lista de Usuarios</h3>
+                        <h3 class="card-title">User List</h3>
                     </div>
                     <div class="card-body table-responsive">
                         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
@@ -44,13 +44,13 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let user of users">
-                                    <td>{{user.Code}}</td>
-                                    <td>{{user.Name}}</td>
-                                    <td>{{user.LastName}}</td>
-                                    <td>{{user.Phone}}</td>
-                                    <td>{{user.Position}}</td>
-                                    <td>{{user.Role}}</td>
-                                    <td>{{user.Email}}</td>
+                                    <td>{{user.code}}</td>
+                                    <td>{{user.name}}</td>
+                                    <td>{{user.lastName}}</td>
+                                    <td>{{user.phone}}</td>
+                                    <td>{{user.position}}</td>
+                                    <td>{{user.role}}</td>
+                                    <td>{{user.email}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <button (click)="edit(user.UserId)" type="button" class="btn btn-warning" data-toggle="modal"
@@ -128,9 +128,9 @@
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Close</button>
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
-                            Guardar</button>
+                            Save</button>
                     </div>
                 </form>
             </div>

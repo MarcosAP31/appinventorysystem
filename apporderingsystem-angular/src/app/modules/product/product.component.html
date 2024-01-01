@@ -37,6 +37,7 @@
                                     <th>Name</th>
                                     <th>Kind</th>
                                     <th>Label</th>
+                                    <th>Price</th>
                                     <th>UnitMeasurement</th>
                                 </tr>
                             </thead>
@@ -72,7 +73,7 @@
     <div class="modal fade" id="modal-default"  data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form ngNativeValidate [formGroup]="formMenuItem" (ngSubmit)="submit()">
+                <form ngNativeValidate [formGroup]="formProduct" (ngSubmit)="submit()">
                     <div class="modal-header">
                         <h4 class="modal-title">{{creating?'New':'Editing'}} Product</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">

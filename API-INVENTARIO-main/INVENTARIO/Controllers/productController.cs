@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;Product ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public ProductController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -27,7 +27,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> getProducts(string token)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -60,7 +60,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{productId}")]
-        public async Task<ActionResult<Product>> getProductById(int productId, string token)
+        public async Task<ActionResult<Product>> GetProductById(int productId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -98,7 +98,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{sku}")]
-        public async Task<ActionResult<Product>> getProductBySKU(string sku, string token)
+        public async Task<ActionResult<Product>> GetProductBySKU(string sku, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -196,9 +196,19 @@ namespace INVENTARIO.Controllers
                 }
                 else
                 {
-                    context.Product.Add(product);
-                    await context.SaveChangesAsync();
-                    return Ok("Was updated successfully");
+                    var existingProduct = await context.Product.FirstOrDefaultAsync(res => res.Name.Equals(product.Name));
+                    if (existingProduct != null)
+                    {
+                        return Problem("Product with the same name already exists");
+                    }
+                    else
+                    {
+                        context.Product.Add(product);
+                        await context.SaveChangesAsync();
+                        return Ok("Was updated successfully");
+
+                    }
+                    
                 }
             }
 
@@ -206,7 +216,7 @@ namespace INVENTARIO.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{productId}")]
-        public async Task<IActionResult> deleteProduct(int productId, string token)
+        public async Task<IActionResult> DeleteProduct(int productId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -250,10 +260,6 @@ namespace INVENTARIO.Controllers
 
         }
 
-        private bool productExists(int id)
-        {
-            return (_context.Product?.Any(e => e.ProductId == id)).GetValueOrDefault();
-        }
     }
 }
 

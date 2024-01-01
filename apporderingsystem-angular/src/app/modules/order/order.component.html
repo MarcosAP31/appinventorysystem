@@ -52,7 +52,7 @@
                                     <td>{{order.DeliveryDate | date:"dd/MM/yyyy"}}</td>
                                     <td>S/.{{order.TotalPrice.toFixed(2)}}</td>
                                     <td>{{order.Seller}}</td>
-                                    <td>{{order.Delivery Man}}</td>
+                                    <td>{{order.DeliveryMan}}</td>
                                     <td>{{order.Status}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
@@ -116,11 +116,11 @@
                                 class="form-control" placeholder="Enter quantity" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputDeliveryMan">DeliveryMan</label>
+                            <label for="inputDeliveryMan">Delivery Man</label>
                             <select name="DeliveryMan" class="form-control" formControlName="DeliveryMan">
                                 <option value="" disabled selected hidden>Select a delivery man</option>
-                                <option *ngFor="let deliveryman of deliverymans" [value]="deliveryman.UserId">
-                                    {{deliveryman.Name}}</option>
+                                <option *ngFor="let user of users" [value]="user.UserId">
+                                    {{user.Name}} {{user.LastName}}</option>
                             </select>
                         </div>
                         
@@ -155,7 +155,7 @@
                                             class="btn btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button (click)="deleteElement(element.productid,element.ubicationid)"
+                                        <button (click)="deleteElement(element.productid)"
                                             type="button" class="btn btn-danger">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -225,17 +225,20 @@
                         </div>
                         <div class="form-group">
                             <label for="inputDeliveryMan">DeliveryMan</label>
-                            <input readonly type="text" class="form-control" Name="" formControlName="DeliveryMan"
-                                class="form-control" placeholder="Enter delivery man" required>
+                            <select name="DeliveryMan" class="form-control" formControlName="DeliveryMan">
+                                <option value="" disabled selected hidden>Select a delivery man</option>
+                                <option *ngFor="let user of users" [value]="user.UserId">
+                                    {{user.Name}} {{user.LastName}}</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="selectState">Status</label>
                             <select name="State" class="form-control" formControlName="State" #selectState>
                                 <option value="" disabled selected hidden>Select a state</option>
-                                <option value="To attend">To attend</option>
-                                <option value="In progress">In progress</option>
-                                <option value="In delivery">In delivery</option>
-                                <option value="Received">Received</option>
+                                <option value="Por atender">Por atender</option>
+                                <option value="En proceso">En proceso</option>
+                                <option value="En delivery">En delivery</option>
+                                <option value="Recibido">Recibido</option>
                             </select>
                         </div>
                     </div>

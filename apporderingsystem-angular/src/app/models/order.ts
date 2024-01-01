@@ -6,6 +6,6 @@ export class Order{
     DeliveryDate!:Date;
     TotalPrice!:number;
     Seller!:string;
-    DeliverMan!:string;
+    DeliveryMan!:string;
     Status!:string;
 }

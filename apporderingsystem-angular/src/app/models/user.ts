@@ -1,9 +1,12 @@
 export class User{
     UserId!:number;
+    Code!:string;
     Name!:string;
     LastName!:string;
-    Phone!:string;
+    Phone!:number;
+    Position!:string;
+    Role!:string;
     Email!:string;
-    Username!:string;
     Password!:string;
+    
 }

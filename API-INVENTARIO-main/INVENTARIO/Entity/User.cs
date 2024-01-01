@@ -7,14 +7,16 @@ namespace INVENTARIO.Entity
     public class User
     {
         [Key]
-        public int? UserId { set; get; }
+        public int UserId { set; get; }
         public string? Code { set; get; }
         public string? Name { set; get; }
-        public string? Email { set; get; }
-        public string? Password { set; get; }
+        public string? LastName { set; get; }
         public int? Phone { set; get; }
         public string? Position { set; get; }
         public string? Role { set; get; }
+        public string? Email { set; get; }
+        public string? Password { set; get; }
+        
  
     }
 }

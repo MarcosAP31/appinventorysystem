@@ -19,17 +19,15 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public UserController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
             _cifrado = cifrado_;
         }
         [HttpPost("login")]
-        public async Task<IActionResult> getUserAsync(User user)
+        public async Task<IActionResult> GetUserAsync(User user)
         {
-
-
             using (var context = new SampleContext(defaultConnection))
             {
                 var result = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
@@ -43,7 +41,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpPost("validatelogin")]
-        public async Task<IActionResult> validarlogin(string token)
+        public async Task<IActionResult> ValidateLogin(string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -63,7 +61,7 @@ namespace INVENTARIO.Controllers
 
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> getUsers(string token)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -96,7 +94,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<User>> getUserById(int userId, string token)
+        public async Task<ActionResult<User>> GetUserById(int userId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -134,7 +132,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("code/{code}")]
-        public async Task<ActionResult<User>> getUserByCode(string code, string token)
+        public async Task<ActionResult<User>> GetUserByCode(string code, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -172,7 +170,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("email/{email}")]
-        public async Task<ActionResult<User>> getUserByEmail(string email, string token)
+        public async Task<ActionResult<User>> GetUserByEmail(string email, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -206,6 +204,37 @@ namespace INVENTARIO.Controllers
                             return _user;
                         }
                     }
+                }
+            }
+        }
+        [HttpGet("role/{role}")]
+        public async Task<ActionResult<User>> GetUserByRole(string role, string token)
+        {
+            var vtoken = _cifrado.validarToken(token);
+
+            if (vtoken == null)
+            {
+                return Problem("The token isn't valid!");
+            }
+            using (var context = new SampleContext(defaultConnection))
+            {
+                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                if (user == null)
+                {
+                    return Problem("The user entered isn't valid");
+                }
+                else
+                {
+                    var userList = await context.User
+                        .Where(u => u.Role == role)
+                        .ToListAsync();
+
+                    if (userList == null || !userList.Any())
+                    {
+                        return NotFound("No order x products found for the specified orderId.");
+                    }
+
+                    return Ok(userList);
                 }
             }
         }
@@ -275,7 +304,7 @@ namespace INVENTARIO.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> deleteUser(int userId, string token)
+        public async Task<IActionResult> DeleteUser(int userId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -319,9 +348,5 @@ namespace INVENTARIO.Controllers
 
         }
 
-        private bool userExists(int id)
-        {
-            return (_context.User?.Any(e => e.UserId == id)).GetValueOrDefault();
-        }
     }
 }

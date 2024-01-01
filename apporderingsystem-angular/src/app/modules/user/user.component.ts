@@ -15,16 +15,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./user.component.css']
 })
 export class UserComponent implements OnInit {
-  image: any = "../../../assets/upload.png";
   show: boolean = false;
-  title = 'fileUpload';
-  images = '';
-  imgURL = '/assets/noimage.png';
-  multipleImages = [];
-  imagenes: any = [];
-  pipe = new DatePipe('en-US');
-  todayWithPipe: any;
-
   formUser: FormGroup;
   users: any;
   dtOptions: DataTables.Settings = {};
@@ -40,11 +31,13 @@ export class UserComponent implements OnInit {
     private storeService: StoreService
   ) {
     this.formUser = this.form.group({
+      Code:[''],
       Name: [''],
       LastName: [''],
       Phone: [''],
+      Position: [''],
+      Role: [''],
       Email: [''],
-      UserName: [''],
       Password: ['']
     });
   }
@@ -68,6 +61,7 @@ export class UserComponent implements OnInit {
   get() {
     this.storeService.getUsers(localStorage.getItem('token')).subscribe(response => {
       this.users = response;
+      console.log(this.users);
       this.dtTrigger.next(0);
     });
   }
@@ -78,7 +72,6 @@ export class UserComponent implements OnInit {
       responsive: true
     };
     this.get();
-    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
   }
 
   // Método para editar un usuario
@@ -88,22 +81,26 @@ export class UserComponent implements OnInit {
       (response: any) => {
         this.id = response.UserId;
         this.formUser.setValue({
+          Code:response.Code,
           Name: response.Name,
           LastName: response.LastName,
           Phone: response.Phone,
+          Position:response.Position,
+          Role:response.Role,
           Email: response.Email,
-          UserName: response.Username,
           Password: response.Password
         });
         console.log(this.id);
       }
     );
     this.formUser = this.form.group({
+      Code:[''],
       Name: [''],
       LastName: [''],
       Phone: [''],
+      Position: [''],
+      Role: [''],
       Email: [''],
-      UserName: [''],
       Password: ['']
     });
   }
@@ -164,11 +161,13 @@ export class UserComponent implements OnInit {
   // Método para guardar o actualizar un usuario
   submit() {
     var user = new User();
+    user.Code=this.formUser.value.Code;
     user.Name = this.formUser.value.Name;
     user.LastName = this.formUser.value.LastName;
     user.Phone = this.formUser.value.Phone;
+    user.Position=this.formUser.value.Position;
+    user.Role=this.formUser.value.Role;
     user.Email = this.formUser.value.Email;
-    user.Username = this.formUser.value.Username;
     user.Password = this.formUser.value.Password;
     var solicitud = this.creating ? this.storeService.insertUser(user,localStorage.getItem('token')) : this.storeService.updateUser(user,localStorage.getItem('token'));
     solicitud.subscribe((r: any) => {
@@ -213,11 +212,13 @@ export class UserComponent implements OnInit {
   // Método para cerrar el modal
   closeModal() {
     this.formUser = this.form.group({
+      Code:[''],
       Name: [''],
       LastName: [''],
       Phone: [''],
+      Position: [''],
+      Role: [''],
       Email: [''],
-      UserName: [''],
       Password: ['']
     });
   }

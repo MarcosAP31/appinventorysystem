@@ -7,7 +7,7 @@ namespace INVENTARIO.Entity
     public class Order
     {
         [Key]
-        public int? OrderId { set; get; }
+        public int OrderId { set; get; }
         public DateTime? OrderDate { set; get; }
         public DateTime? ReceptionDate { set; get; }
         public DateTime? DispatchedDate { set; get; }

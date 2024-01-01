@@ -39,7 +39,7 @@
                     <img src="assets/img/usuario.png" class="img-circle " alt="User Image">
                 </div>
                 <div class="info">
-                    <a class="d-block">{{windowRef.localStorage.getItem('username')}}</a>
+                    <a class="d-block">{{windowRef.localStorage.getItem('name')}}</a>
                 </div>
             </div>
 
@@ -47,13 +47,7 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview"
                     data-accordion="false">
                             <li class="nav-item">
-                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/menucategory']">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Categories</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/menuitem']">
+                                <a class="nav-link" routerLinkActive="active" [routerLink]="['mantenimiento/product']">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Products</p>
                                 </a>

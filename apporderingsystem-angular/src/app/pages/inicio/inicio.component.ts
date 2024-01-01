@@ -61,24 +61,13 @@ export class InicioComponent implements OnInit {
 
         // Navigate to the login page
         this.router.navigateByUrl('login');
+        this.cookieService.delete('token_access');
+        localStorage.removeItem('token');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
 
-        // Optionally, notify the server to expire the token
-        this.storeService.expireToken(localStorage.getItem('token')).subscribe(
-          (res: any) => {
-            if (res == null) {
-              console.log('Token expired on the server');
-            }
-            // Clear user-related data
-            this.cookieService.delete('token_access');
-            localStorage.removeItem('token');
-            localStorage.removeItem('name');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('username');
-          },
-          (error: any) => {
-            console.error('Error expiring token on the server:', error);
-          }
-        );
+
       }
     });
   }

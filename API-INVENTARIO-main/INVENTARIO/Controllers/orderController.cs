@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public OrderController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -27,7 +27,7 @@ namespace INVENTARIO.Controllers
         }
  
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> getOrders(string token)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -60,7 +60,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{orderId}")]
-        public async Task<ActionResult<Order>> getOrderById(int orderId, string token)
+        public async Task<ActionResult<Order>> GetOrderById(int orderId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -98,7 +98,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{orderDate}")]
-        public async Task<ActionResult<Order>> getOrderByOrderDate(DateTime orderDate, string token)
+        public async Task<ActionResult<Order>> GetOrderByOrderDate(DateTime orderDate, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -136,7 +136,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{receptionDate}")]
-        public async Task<ActionResult<Order>> getOrderByReceptionDate(DateTime receptionDate, string token)
+        public async Task<ActionResult<Order>> GetOrderByReceptionDate(DateTime receptionDate, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -174,7 +174,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{dispatchedDate}")]
-        public async Task<ActionResult<Order>> getOrderByDispatchedDate(DateTime dispatchedDate, string token)
+        public async Task<ActionResult<Order>> GetOrderByDispatchedDate(DateTime dispatchedDate, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -212,7 +212,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{deliveryDate}")]
-        public async Task<ActionResult<Order>> getOrderByDeliveryDate(DateTime deliveryDate, string token)
+        public async Task<ActionResult<Order>> GetOrderByDeliveryDate(DateTime deliveryDate, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -250,7 +250,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{seller}")]
-        public async Task<ActionResult<Order>> getOrderBySeller(string seller, string token)
+        public async Task<ActionResult<Order>> GetOrderBySeller(string seller, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -288,7 +288,7 @@ namespace INVENTARIO.Controllers
             }
         }
         [HttpGet("{deliveryMan}")]
-        public async Task<ActionResult<Order>> getOrderByDeliveryMan(string deliveryMan, string token)
+        public async Task<ActionResult<Order>> GetOrderByDeliveryMan(string deliveryMan, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -400,7 +400,7 @@ namespace INVENTARIO.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{orderId}")]
-        public async Task<IActionResult> deleteUser(int orderId, string token)
+        public async Task<IActionResult> DeleteUser(int orderId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 

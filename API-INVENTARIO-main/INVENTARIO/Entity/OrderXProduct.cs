@@ -7,7 +7,7 @@ namespace INVENTARIO.Entity
     public class OrderXProduct
     {
         [Key]
-        public int? OrderXProductId { set; get; }
+        public int OrderXProductId { set; get; }
         public int? OrderId { set; get; }
         public int? ProductId { set; get; }
         public int? Quantity { set; get; }

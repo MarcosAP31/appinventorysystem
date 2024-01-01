@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public OrderXProductController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -61,7 +61,7 @@ namespace INVENTARIO.Controllers
 
 
         [HttpGet("{orderxproductId}")]
-        public async Task<ActionResult<OrderXProduct>> getOrderXProductById(int orderxproductId, string token)
+        public async Task<ActionResult<OrderXProduct>> GetOrderXProductById(int orderxproductId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
@@ -260,7 +260,7 @@ namespace INVENTARIO.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{orderxproductId}")]
-        public async Task<IActionResult> deleteUser(int orderxproductId, string token)
+        public async Task<IActionResult> DeleteOrderXProduct(int orderxproductId, string token)
         {
             var vtoken = _cifrado.validarToken(token);
 
