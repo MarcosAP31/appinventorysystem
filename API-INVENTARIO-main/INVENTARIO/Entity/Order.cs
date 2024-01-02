@@ -15,6 +15,6 @@ namespace INVENTARIO.Entity
         public int? TotalPrice { set; get; }
         public string? Seller { set; get; }
         public string? DeliveryMan { set; get; }
-        public int? Status { set; get; }
+        public string? Status { set; get; }
     }
 }

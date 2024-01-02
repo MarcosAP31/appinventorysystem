@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { User } from 'src/app/models/user';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 import { StoreService } from 'src/app/service/store.service';
 
 import Swal from 'sweetalert2';
@@ -22,11 +20,9 @@ export class UserComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
   noValido = true;
-  id = 0;
+  user:any;
 
   constructor(
-    private http: HttpClient,
-    private sanitizer: DomSanitizer,
     public form: FormBuilder,
     private storeService: StoreService
   ) {
@@ -79,18 +75,18 @@ export class UserComponent implements OnInit {
     this.creating = false;
     this.storeService.getUser(userid,localStorage.getItem('token')).subscribe(
       (response: any) => {
-        this.id = response.UserId;
+        this.user = response;
         this.formUser.setValue({
-          Code:response.Code,
-          Name: response.Name,
-          LastName: response.LastName,
-          Phone: response.Phone,
-          Position:response.Position,
-          Role:response.Role,
-          Email: response.Email,
-          Password: response.Password
+          Code:response.code,
+          Name: response.name,
+          LastName: response.lastName,
+          Phone: response.phone,
+          Position:response.position,
+          Role:response.role,
+          Email: response.email,
+          Password: response.password
         });
-        console.log(this.id);
+        console.log(this.user);
       }
     );
     this.formUser = this.form.group({
@@ -161,52 +157,77 @@ export class UserComponent implements OnInit {
   // Método para guardar o actualizar un usuario
   submit() {
     var user = new User();
-    user.Code=this.formUser.value.Code;
-    user.Name = this.formUser.value.Name;
-    user.LastName = this.formUser.value.LastName;
-    user.Phone = this.formUser.value.Phone;
-    user.Position=this.formUser.value.Position;
-    user.Role=this.formUser.value.Role;
-    user.Email = this.formUser.value.Email;
-    user.Password = this.formUser.value.Password;
+    if(this.creating==false){
+      user.userId=this.user.userId;
+    }
+    user.code=this.formUser.value.Code;
+    user.name = this.formUser.value.Name;
+    user.lastName = this.formUser.value.LastName;
+    user.phone = this.formUser.value.Phone;
+    user.position=this.formUser.value.Position;
+    user.role=this.formUser.value.Role;
+    user.email = this.formUser.value.Email;
+    user.password = this.formUser.value.Password;
     var solicitud = this.creating ? this.storeService.insertUser(user,localStorage.getItem('token')) : this.storeService.updateUser(user,localStorage.getItem('token'));
-    solicitud.subscribe((r: any) => {
-      if (this.creating == true && r.message === 'User with the same username or email already exists') {
+    Swal.fire({
+      title: 'Confirmación',
+      text: '¿Seguro de guardar el registro?',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: `Guardar`,
+      denyButtonText: `Cancelar`,
+      allowOutsideClick: false,
+      icon: 'info'
+    }).then((result) => {
+      if (result.isConfirmed) {
         Swal.fire({
           allowOutsideClick: false,
-          icon: 'error',
-          title: 'Error al registrar',
-          text: 'Ya existe un usuario con ese nombre de usuario o correo.',
+          icon: 'info',
+          title: 'Guardando registro',
+          text: 'Cargando...',
         });
+        Swal.showLoading();
+        console.log("holaaaa")
+        solicitud.subscribe((r: any) => {
+          console.log(r)
+          if (this.creating == true && r.message === 'User with the same name already exists') {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'Error al registrar',
+              text: 'Ya existe un usuario con ese nombre.',
+            });
+          }
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Se ha guardado correctamente!',
+          }).then(() => {
+            window.location.reload();
+          });
 
-      }
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        title: 'Guardando registro',
-        text: 'Cargando...',
-      });
-      Swal.showLoading();
-    }, err => {
-      console.log(err);
+        }, err => {
+          console.log(err);
 
-      if (err.name == "HttpErrorResponse") {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'error',
-          title: 'Error al conectar',
-          text: 'Error de comunicación con el servidor',
+          if (err.name == "HttpErrorResponse") {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'Error al conectar',
+              text: 'Error de comunicación con el servidor',
+            });
+            return;
+          }
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'error',
+            title: err.name,
+            text: err.message,
+          });
         });
-        return;
-      }
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'error',
-        title: err.name,
-        text: err.message,
-      });
+      };
     });
-
   }
 
   // Método para cerrar el modal

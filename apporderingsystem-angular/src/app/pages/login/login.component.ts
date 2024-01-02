@@ -75,8 +75,8 @@ export class LoginComponent implements OnInit {
   submit() {
     // Create a new user with the form data
     const user = new User();
-    user.Email = this.formLogin.value.email;
-    user.Password = this.formLogin.value.password;
+    user.email = this.formLogin.value.email;
+    user.password = this.formLogin.value.password;
   
     // Show a loading message while authentication is in progress
   

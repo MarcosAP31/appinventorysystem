@@ -34,7 +34,7 @@ export class OrderComponent implements OnInit {
   noValorderido = true;
   orderid: number = 0;
   idproduct: number = 0;
-  productsku:string="";
+  productsku: string = "";
   productprice: number = 0;
   productdescription: string = "";
   pipe = new DatePipe('en-US');
@@ -96,9 +96,12 @@ export class OrderComponent implements OnInit {
     this.storeService.getProducts(localStorage.getItem('token')).subscribe(response => {
       this.products = response;
     })
-    this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
+    this.storeService.getUsersByRole('Encargado', localStorage.getItem('token')).subscribe(r => {
       this.users = r;
     })
+    /*this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
+      this.users = r;
+    })*/
   }
 
   ngOnInit(): void {
@@ -244,6 +247,34 @@ export class OrderComponent implements OnInit {
     });
   }
 
+  // Add a helper method to convert string to Date
+convertToDate(dateString: string | null): Date | null {
+  if (dateString) {
+    // Assuming your date format is "dd/MM/yyyy h:mm:ss a"
+    const parts = dateString.split(/[\s/:]+/);
+    const year = parseInt(parts[2], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[0], 10);
+    const hours = parseInt(parts[3], 10);
+    const minutes = parseInt(parts[4], 10);
+    const seconds = parseInt(parts[5], 10);
+    const period = parts[6].toUpperCase() === 'AM' ? 'AM' : 'PM';
+
+    let date = new Date(year, month, day, hours, minutes, seconds);
+    
+    // Adjust for 12-hour format
+    if (period === 'PM' && hours < 12) {
+      date.setHours(hours + 12);
+    } else if (period === 'AM' && hours === 12) {
+      date.setHours(0);
+    }
+
+    return date;
+  }
+
+  return null;
+}
+
   // Método para guardar el proveedor
   submit() {
     this.finalprice = 0;
@@ -253,20 +284,23 @@ export class OrderComponent implements OnInit {
     }
     this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {
 
-      order.OrderDate = this.todayWithPipe;
-      order.ReceptionDate = this.formOrder.value.ReceptionDate;
-      order.DispatchedDate = this.formOrder.value.DispatchedDate;
-      order.DeliveryDate = this.formOrder.value.DeliveryDate;
-      order.TotalPrice = this.finalprice;
-      order.Seller = user.Name + " " + user.LastName;
-      this.storeService.getUser(this.formOrder.value.DeliveryMan, localStorage.getItem('userId')).subscribe((u: any) => {
-        order.DeliveryMan = u.Name + " " + u.LastName;
+      order.orderDate = new Date(); // Assuming you want to use the current date and time
+      console.log(order)
+      order.receptionDate = this.convertToDate(this.formOrder.value.ReceptionDate);
+      order.dispatchedDate = this.convertToDate(this.formOrder.value.DispatchedDate);
+      order.deliveryDate = this.convertToDate(this.formOrder.value.DeliveryDate);
+      order.totalPrice = this.finalprice;
+      order.seller = user.name + " " + user.lastName;
+      
+      this.storeService.getUser(this.formOrder.value.DeliveryMan, localStorage.getItem('token')).subscribe((u: any) => {
+        order.deliveryMan = u.name + " " + u.lastName;
       })
-      order.Status = "Por atender";
+      order.status = "Por atender";
+      
     })
 
     if (!this.creating) {
-      order.OrderId = this.orderid;
+      order.orderId = this.orderid;
     }
 
     var solicitud = this.creating ? this.storeService.insertOrder(order, localStorage.getItem('token')) : this.storeService.updateOrder(order, localStorage.getItem('token'));
@@ -292,21 +326,21 @@ export class OrderComponent implements OnInit {
         solicitud.subscribe((r: any) => {
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
-            orderxproduct.OrderId = r;
-            orderxproduct.ProductId = element.productid;
-            orderxproduct.Quantity = element.quantity;
-            orderxproduct.Subtotal = element.quantity * element.price;
+            orderxproduct.orderId = r;
+            orderxproduct.productId = element.productid;
+            orderxproduct.quantity = element.quantity;
+            orderxproduct.subtotal = element.quantity * element.price;
             this.storeService.insertOrderXProduct(orderxproduct, localStorage.getItem('token')).subscribe(() => { })
           }
           this.elements.length = 0;
-          console.log(order.OrderDate);
+          console.log(order.orderDate);
           Swal.fire({
             allowOutsideClick: false,
             icon: 'success',
             title: 'Éxito',
             text: '¡Se ha guardado correctamente!',
           }).then(() => {
-            window.location.reload();
+            //window.location.reload();
           });
         }, err => {
           console.log(err);
@@ -338,17 +372,17 @@ export class OrderComponent implements OnInit {
     var order = new Order();
     var quantityorder = 0;
     this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {
-      order.OrderDate = this.todayWithPipe;
-      order.ReceptionDate = this.formEditOrder.value.ReceptionDate;
-      order.DispatchedDate = this.formEditOrder.value.DispatchedDate;
-      order.DeliveryDate = this.formEditOrder.value.DeliveryDate;
-      order.TotalPrice = this.formEditOrder.value.TotalPrice;
-      order.Seller=user.Name+" "+user.LastName;
+      order.orderDate = this.todayWithPipe;
+      order.receptionDate = this.formEditOrder.value.ReceptionDate;
+      order.dispatchedDate = this.formEditOrder.value.DispatchedDate;
+      order.deliveryDate = this.formEditOrder.value.DeliveryDate;
+      order.totalPrice = this.formEditOrder.value.TotalPrice;
+      order.seller = user.Name + " " + user.LastName;
       this.storeService.getUser(this.formOrder.value.DeliveryMan, localStorage.getItem('userId')).subscribe((u: any) => {
-        order.DeliveryMan = u.Name + " " + u.LastName;
+        order.deliveryMan = u.Name + " " + u.LastName;
       })
-      order.Status = this.formEditOrder.value.State;
-      
+      order.status = this.formEditOrder.value.State;
+
     })
 
   }
@@ -363,10 +397,10 @@ export class OrderComponent implements OnInit {
         this.ProductId.nativeElement.disabled = false;
         this.deleteElement(this.idproductelement);
       }
-      this.storeService.getProduct(this.formOrder.value.ProductId,localStorage.getItem('token')).subscribe((p: any) => {
-        this.productsku=p.SKU;
-        this.productdescription = p.Name;
-        this.productprice = p.Price;
+      this.storeService.getProduct(this.formOrder.value.ProductId, localStorage.getItem('token')).subscribe((p: any) => {
+        this.productsku = p.sku;
+        this.productdescription = p.name;
+        this.productprice = p.price;
 
         for (const element of this.elements) {
           if (element.productid == this.formOrder.value.ProductId) {
@@ -382,24 +416,24 @@ export class OrderComponent implements OnInit {
         if (this.addedproduct == false) {
           this.elements.push({
             productid: this.formOrder.value.ProductId,
-            sku:this.productsku,
+            sku: this.productsku,
             product: this.productdescription,
             price: this.productprice,
             quantity: this.formOrder.value.Quantity,
           });
-          this.finalprice = this.finalprice + (this.formOrder.value.Quantity * p.SalePrice);
+          this.finalprice = this.finalprice + (this.formOrder.value.Quantity * p.price);
         }
-       
+
         this.addedproduct = false;
-        this.idproduct = 0; this.productsku="";this.productdescription = ""; this.productprice = 0;
+        this.idproduct = 0; this.productsku = ""; this.productdescription = ""; this.productprice = 0;
       })
     } else {
       console.log("hola");
     }
     this.idproductelement = 0;
   }
-  
-  
+
+
   // Método para cerrar el modal y limpiar el formulario
   closeModal() {
 

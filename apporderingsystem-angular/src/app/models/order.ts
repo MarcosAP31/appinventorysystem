@@ -1,11 +1,11 @@
 export class Order{
-    OrderId!:number;
-    OrderDate!:Date;
-    ReceptionDate!:Date;
-    DispatchedDate!:Date;
-    DeliveryDate!:Date;
-    TotalPrice!:number;
-    Seller!:string;
-    DeliveryMan!:string;
-    Status!:string;
+    orderId!:number;
+    orderDate!:Date | null;
+    receptionDate!:Date | null;
+    dispatchedDate!:Date | null;
+    deliveryDate!:Date | null;
+    totalPrice!:number;
+    seller!:string;
+    deliveryMan!:string;
+    status!:string;
 }

@@ -1,9 +1,9 @@
 export class Product{
-    ProductId!:number;
-    SKU!:string;
-    Name!:string;
-    Kind!:string;
-    Label!:string;
-    Price!:number;
-    UnitMeasurement!:number;
+    productId!:number;
+    sku!:string;
+    name!:string;
+    kind!:string;
+    label!:string;
+    price!:number;
+    unitMeasurement!:number;
 }

@@ -21,7 +21,7 @@ export class ProductComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject<any>();
   creating = true;
   noValido = true;
-  id = 0;
+  product:any;
 
   constructor(
     private http: HttpClient,
@@ -75,7 +75,7 @@ export class ProductComponent implements OnInit {
     this.creating = false;
     this.storeService.getProduct(productid,localStorage.getItem('token')).subscribe(
       (response: any) => {
-        this.id = response.ProductId;
+        this.product = response;
         this.formProduct.setValue({
           SKU:response.sku,
           Name: response.name,
@@ -84,7 +84,7 @@ export class ProductComponent implements OnInit {
           Price:response.price,
           UnitMeasurement: response.unitMeasurement
         });
-        console.log(this.id);
+        console.log(this.product);
       }
     );
     this.formProduct = this.form.group({
@@ -153,13 +153,16 @@ export class ProductComponent implements OnInit {
   // Método para guardar o actualizar un usuario
   submit() {
     var product = new Product();
-    product.SKU = this.formProduct.value.SKU;
-    product.Name = this.formProduct.value.Name;
-    product.Kind = this.formProduct.value.Kind;
-    product.Label = this.formProduct.value.Label;
-    product.Price=this.formProduct.value.Price;
-    product.UnitMeasurement = this.formProduct.value.UnitMeasurement;
-   
+    if(this.creating==false){
+      product.productId=this.product.productId;
+    }
+    product.sku = this.formProduct.value.SKU;
+    product.name = this.formProduct.value.Name;
+    product.kind = this.formProduct.value.Kind;
+    product.label = this.formProduct.value.Label;
+    product.price=this.formProduct.value.Price;
+    product.unitMeasurement = this.formProduct.value.UnitMeasurement;
+    
     var solicitud = this.creating ? this.storeService.insertProduct(product,localStorage.getItem('token')) : this.storeService.updateProduct(product,localStorage.getItem('token'));
     Swal.fire({
       title: 'Confirmación',

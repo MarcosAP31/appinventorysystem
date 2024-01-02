@@ -97,7 +97,7 @@ namespace INVENTARIO.Controllers
                         return Problem("The user enterd isn't valid");
                     }
 
-                    var userList = await context.Product.ToListAsync();
+                    var userList = await context.User.ToListAsync();
                     if (userList == null || !userList.Any())
                     {
                         return NotFound("No users found");
@@ -290,7 +290,14 @@ namespace INVENTARIO.Controllers
                         return Problem("No record found");
                     }
 
-                    query=_user;
+                    query.Code = _user.Code;
+                    query.Name = _user.Name;
+                    query.LastName = _user.LastName;
+                    query.Phone = _user.Phone;
+                    query.Position=_user.Position;
+                    query.Role = _user.Role;
+                    query.Email=_user.Email;
+                    query.Password = _user.Password;
                     context.SaveChanges();
                     return Ok(query);
 
@@ -329,10 +336,10 @@ namespace INVENTARIO.Controllers
                         return Problem("The user entered isn't valid");
                     }
 
-                    var existingUser = await context.User.FirstOrDefaultAsync(res => res.Name.Equals(user.Name) && res.LastName.Equals(user.LastName));
+                    var existingUser = await context.User.FirstOrDefaultAsync(res => res.Name.Equals(_user.Name) && res.LastName.Equals(_user.LastName));
                     if (existingUser != null)
                     {
-                        return Problem("Product with the same name already exists");
+                        return Problem("User with the same name already exists");
                     }
 
                     context.User.Add(_user);

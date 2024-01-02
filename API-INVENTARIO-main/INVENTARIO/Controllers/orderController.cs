@@ -301,7 +301,14 @@ namespace INVENTARIO.Controllers
                         return Problem("No record found");
                     }
 
-                    query=order;
+                    query.OrderDate = order.OrderDate;
+                    query.ReceptionDate = order.ReceptionDate;
+                    query.DispatchedDate = order.DispatchedDate;
+                    query.DeliveryDate = order.DeliveryDate;
+                    query.TotalPrice=order.TotalPrice;
+                    query.Seller = order.Seller;
+                    query.DeliveryMan=order.DeliveryMan;
+                    query.Status = order.Status;
                     context.SaveChanges();
                     return Ok(query);
 

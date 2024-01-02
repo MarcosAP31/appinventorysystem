@@ -220,15 +220,15 @@ namespace INVENTARIO.Controllers
                     }
                     else
                     {
-                        query = orderxproduct;
+                        query.OrderId = orderxproduct.OrderId;
+                        query.ProductId = orderxproduct.ProductId;
+                        query.Quantity = orderxproduct.Quantity;
+                        query.Subtotal = orderxproduct.Subtotal;
                         context.SaveChanges();
                         return Ok(query);
                     }
-
                 }
             }
-
-
         }
 
         // POST: api/user

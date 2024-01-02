@@ -1,7 +1,7 @@
 export class OrderXProduct{
-    OrderXProductId!:number;
-    OrderId!:number;
-    ProductId!:number;
-    Quantity!:number;
-    Subtotal!:number;
+    orderXProductId!:number;
+    orderId!:number;
+    productId!:number;
+    quantity!:number;
+    subtotal!:number;
 }
