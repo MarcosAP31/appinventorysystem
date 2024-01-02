@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
         public OrderXProductController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -40,7 +40,7 @@ namespace INVENTARIO.Controllers
                 var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
                 if (user == null)
                 {
-                    return Problem("The user enterd isn't valid");
+                    return Problem("The user entered isn't valid");
                 }
                 else
                 {
@@ -183,7 +183,7 @@ namespace INVENTARIO.Controllers
                     }
 
                     // Calculate total price
-                    float? totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
+                    decimal? totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
 
                     return Ok(totalPrice);
                 }

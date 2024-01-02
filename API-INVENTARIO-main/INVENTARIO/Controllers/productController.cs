@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
         public ProductController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -29,149 +29,158 @@ namespace INVENTARIO.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user enterd isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.Product == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        var userList = await context.Product.ToListAsync();
-                        return Ok(userList);
+                        return Problem("The user enterd isn't valid");
                     }
 
+                    var productList = await context.Product.ToListAsync();
+                    if (productList == null || !productList.Any())
+                    {
+                        return NotFound("No products found");
+                    }
+
+                    return Ok(productList);
+
                 }
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpGet("{productId}")]
         public async Task<ActionResult<Product>> GetProductById(int productId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.Product == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
+                        return Problem("The user entered isn't valid");
                     }
-                    else
-                    {
-                        var product = await context.Product.FindAsync(productId);
 
-                        if (product == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return product;
-                        }
+                    var product = await context.Product.FindAsync(productId);
+
+                    if (product == null)
+                    {
+                        return NotFound("No product found");
                     }
+
+                    return Ok(product);
+
+
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
-        [HttpGet("{sku}")]
+        [HttpGet("sku/{sku}")]
         public async Task<ActionResult<Product>> GetProductBySKU(string sku, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.Product == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
+                        return Problem("The user entered isn't valid");
                     }
-                    else
-                    {
-                        var product = await context.Product.FirstOrDefaultAsync(res => res.SKU.Equals(sku));
 
-                        if (product == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return product;
-                        }
+                    var product = await context.Product.FirstOrDefaultAsync(res => res.SKU.Equals(sku));
+
+                    if (product == null)
+                    {
+                        return NotFound("No product found");
                     }
+
+                    return Ok(product);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
 
         [HttpPut("update")]
         public async Task<ActionResult> PutProduct(Product product, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    var query = await context.Product.FirstOrDefaultAsync(res => res.ProductId.Equals(product.ProductId));
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var query = await context.Product.FindAsync(product.ProductId);
                     if (query == null)
                     {
                         return Problem("No record found");
                     }
-                    else
-                    {
-                        query.SKU = product.SKU;
-                        query.Name = product.Name;
-                        query.Kind = product.Kind;
-                        query.Label = product.Label;
-                        query.UnitMeasurement = product.UnitMeasurement;
-                        context.SaveChanges();
-                        return Ok(query);
-                    }
+
+                    query.SKU = product.SKU;
+                    query.Name = product.Name;
+                    query.Kind = product.Kind;
+                    query.Label = product.Label;
+                    query.Price=product.Price;
+                    query.UnitMeasurement = product.UnitMeasurement;
+                    context.SaveChanges();
+                    return Ok(query);
 
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
 
         }
@@ -181,36 +190,41 @@ namespace INVENTARIO.Controllers
         [HttpPost("insert")]
         public async Task<ActionResult<Product>> PostProduct(Product product, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
                     var existingProduct = await context.Product.FirstOrDefaultAsync(res => res.Name.Equals(product.Name));
                     if (existingProduct != null)
                     {
                         return Problem("Product with the same name already exists");
                     }
-                    else
-                    {
-                        context.Product.Add(product);
-                        await context.SaveChangesAsync();
-                        return Ok("Was updated successfully");
 
-                    }
-                    
+                    context.Product.Add(product);
+                    await context.SaveChangesAsync();
+                    return Ok("Was updated successfully");
+
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
 
@@ -218,45 +232,42 @@ namespace INVENTARIO.Controllers
         [HttpDelete("{productId}")]
         public async Task<IActionResult> DeleteProduct(int productId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.Product == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var product = await context.Product.FindAsync(productId);
+                    if (product == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var product = await context.Product.FindAsync(productId);
-                        if (product == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            context.Product.Remove(product);
-                            await context.SaveChangesAsync();
 
-                            return NoContent();
-                        }
+                    context.Product.Remove(product);
+                    await context.SaveChangesAsync();
 
+                    return NoContent();
 
-                    }
 
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
 

@@ -39,25 +39,25 @@
                                     <th>Label</th>
                                     <th>Price</th>
                                     <th>UnitMeasurement</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let product of products">
-                                    <td>{{product.ProductId}}</td>
-                                    <td>{{product.SKU}}</td>
-                                    <td>{{product.Name}}</td>
-                                    <td>{{product.Kind}}</td>
-                                    <td>{{product.Label}}</td>
-                                    <td>{{product.Price}}</td>
-                                    <td>{{product.UnitMeasurement}}</td>
-                                    <td>S/.{{product.Price.toFixed(2)}}</td>
+                                    <td>{{product.productId}}</td>
+                                    <td>{{product.sku}}</td>
+                                    <td>{{product.name}}</td>
+                                    <td>{{product.kind}}</td>
+                                    <td>{{product.label}}</td>
+                                    <td>{{product.price.toFixed(2)}}</td>
+                                    <td>{{product.unitMeasurement}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <button (click)="edit(product.ProductId)" type="button" class="btn btn-warning" data-toggle="modal"
+                                            <button (click)="edit(product.productId)" type="button" class="btn btn-warning" data-toggle="modal"
                                             data-target="#modal-default">
                                                 <i class="fas fa-edit" ></i>
                                             </button>
-                                            <button (click)="delete(product.ProductId)" type="button" class="btn btn-danger">
+                                            <button (click)="delete(product.productId)" type="button" class="btn btn-danger">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>

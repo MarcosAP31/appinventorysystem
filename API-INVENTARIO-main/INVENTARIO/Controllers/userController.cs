@@ -19,257 +19,291 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
         public UserController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
             _cifrado = cifrado_;
         }
         [HttpPost("login")]
-        public async Task<IActionResult> GetUserAsync(User user)
+        public async Task<IActionResult> Login(User user)
         {
-            using (var context = new SampleContext(defaultConnection))
+            try
             {
-                var result = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
-                if (result == null)
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    return Problem("No user found");
-                }
-                var cifrado = _cifrado.EncryptStringAES(defaultConnection.Replace(" ", "") + " " + user.Email + " " + user.Password);
+                    var result = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
+                    if (result == null)
+                    {
+                        return Problem("No user found");
+                    }
+                    var cifrado = _cifrado.EncryptStringAES(defaultConnection.Replace(" ", "") + " " + user.Email + " " + user.Password);
 
-                return Ok(cifrado);
+                    return Ok(cifrado);
+                }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         [HttpPost("validatelogin")]
         public async Task<IActionResult> ValidateLogin(string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user enterd isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                return Ok(user);
+                using (var context = new SampleContext(defaultConnection))
+                {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user isn't valid");
+                    }
+                    return Ok(user);
+                }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers(string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user enterd isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.User == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        var userList = await context.User.ToListAsync();
-                        return Ok(userList);
+                        return Problem("The user enterd isn't valid");
                     }
 
+                    var userList = await context.Product.ToListAsync();
+                    if (userList == null || !userList.Any())
+                    {
+                        return NotFound("No users found");
+                    }
+
+                    return Ok(userList);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
 
         [HttpGet("{userId}")]
         public async Task<ActionResult<User>> GetUserById(int userId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.User == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
+                        return Problem("The user entered isn't valid");
                     }
-                    else
-                    {
-                        var _user = await context.User.FindAsync(userId);
 
-                        if (_user == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return _user;
-                        }
+                    var _user = await context.User.FindAsync(userId);
+
+                    if (_user == null)
+                    {
+                        return NotFound("No user found");
                     }
+
+                    return Ok(_user);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         [HttpGet("code/{code}")]
         public async Task<ActionResult<User>> GetUserByCode(string code, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.User == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var _user = await context.User.FirstOrDefaultAsync(res => res.Code.Equals(code));
+
+                    if (_user == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var _user = await context.User.FirstOrDefaultAsync(res => res.Code.Equals(code));
 
-                        if (_user == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return _user;
-                        }
-                    }
+                    return Ok(_user);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         [HttpGet("email/{email}")]
         public async Task<ActionResult<User>> GetUserByEmail(string email, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.User == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+                    var _user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(email));
+
+                    if (_user == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var _user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(email));
 
-                        if (_user == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return _user;
-                        }
-                    }
+                    return Ok(_user);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         [HttpGet("role/{role}")]
         public async Task<ActionResult<User>> GetUserByRole(string role, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
                     var userList = await context.User
                         .Where(u => u.Role == role)
                         .ToListAsync();
 
                     if (userList == null || !userList.Any())
                     {
-                        return NotFound("No order x products found for the specified orderId.");
+                        return NotFound("No user found for the specified userId.");
                     }
 
                     return Ok(userList);
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         [HttpPut("update")]
         public async Task<ActionResult> PutUser(User _user, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
                     var query = await context.User.FindAsync(_user.UserId);
                     if (query == null)
                     {
                         return Problem("No record found");
                     }
-                    else
-                    {
-                        query=_user;
-                        context.SaveChanges();
-                        return Ok(query);
-                    }
+
+                    query=_user;
+                    context.SaveChanges();
+                    return Ok(query);
+
+
 
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
 
         }
@@ -279,26 +313,40 @@ namespace INVENTARIO.Controllers
         [HttpPost("insert")]
         public async Task<ActionResult<User>> PostUser(User _user, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var existingUser = await context.User.FirstOrDefaultAsync(res => res.Name.Equals(user.Name) && res.LastName.Equals(user.LastName));
+                    if (existingUser != null)
+                    {
+                        return Problem("Product with the same name already exists");
+                    }
+
                     context.User.Add(_user);
                     await context.SaveChangesAsync();
                     return Ok("Was updated successfully");
+
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
 
@@ -306,45 +354,46 @@ namespace INVENTARIO.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteUser(int userId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
-
-            if (vtoken == null)
+            try
             {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                var vtoken = _cifrado.validarToken(token);
+                if (vtoken == null)
                 {
-                    return Problem("The user entered isn't valid");
+                    return Problem("The token isn't valid!");
                 }
-                else
+                using (var context = new SampleContext(defaultConnection))
                 {
-                    if (context.User == null)
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
                     {
-                        return NotFound();
+                        return Problem("The user entered isn't valid");
                     }
                     else
                     {
+
                         var _user = await context.User.FindAsync(userId);
                         if (_user == null)
                         {
                             return NotFound();
                         }
-                        else
-                        {
-                            context.User.Remove(_user);
-                            await context.SaveChangesAsync();
 
-                            return NoContent();
-                        }
+
+                        context.User.Remove(_user);
+                        await context.SaveChangesAsync();
+
+                        return NoContent();
+
 
 
                     }
-
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
 
         }
 

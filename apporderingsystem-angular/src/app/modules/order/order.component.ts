@@ -96,7 +96,7 @@ export class OrderComponent implements OnInit {
     this.storeService.getProducts(localStorage.getItem('token')).subscribe(response => {
       this.products = response;
     })
-    this.storeService.getUserByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
+    this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
       this.users = r;
     })
   }

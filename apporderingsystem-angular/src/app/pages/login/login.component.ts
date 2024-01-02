@@ -113,8 +113,9 @@ export class LoginComponent implements OnInit {
               this.storeService.getUserByEmail(this.formLogin.value.email,token).subscribe(
                 (res: any) => {
                   // Store user information in local storage
-                  localStorage.setItem('name', res.Name);
-                  localStorage.setItem('userId', res.UserId);
+                  localStorage.setItem('name', res.name);
+                  console.log(res);
+                  localStorage.setItem('userId', res.userId);
                 },
                 (error: any) => {
                   console.error('Error fetching user information:', error);

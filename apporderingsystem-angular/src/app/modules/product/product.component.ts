@@ -77,12 +77,12 @@ export class ProductComponent implements OnInit {
       (response: any) => {
         this.id = response.ProductId;
         this.formProduct.setValue({
-          SKU:response.SKU,
-          Name: response.Name,
-          Kind: response.Kind,
-          Label: response.Label,
-          Price:response.Price,
-          UnitMeasurement: response.UnitMeasurement
+          SKU:response.sku,
+          Name: response.name,
+          Kind: response.kind,
+          Label: response.label,
+          Price:response.price,
+          UnitMeasurement: response.unitMeasurement
         });
         console.log(this.id);
       }
@@ -161,41 +161,64 @@ export class ProductComponent implements OnInit {
     product.UnitMeasurement = this.formProduct.value.UnitMeasurement;
    
     var solicitud = this.creating ? this.storeService.insertProduct(product,localStorage.getItem('token')) : this.storeService.updateProduct(product,localStorage.getItem('token'));
-    solicitud.subscribe((r: any) => {
-      if (this.creating == true && r.message === 'Product with the same name already exists') {
+    Swal.fire({
+      title: 'Confirmación',
+      text: '¿Seguro de guardar el registro?',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: `Guardar`,
+      denyButtonText: `Cancelar`,
+      allowOutsideClick: false,
+      icon: 'info'
+    }).then((result) => {
+      if (result.isConfirmed) {
         Swal.fire({
           allowOutsideClick: false,
-          icon: 'error',
-          title: 'Error al registrar',
-          text: 'Ya existe un usuario con ese nombre de usuario o correo.',
+          icon: 'info',
+          title: 'Guardando registro',
+          text: 'Cargando...',
         });
+        Swal.showLoading();
+        console.log("holaaaa")
+        solicitud.subscribe((r: any) => {
+          console.log(r)
+          if (this.creating == true && r.message === 'Product with the same name already exists') {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'Error al registrar',
+              text: 'Ya existe un producto con ese nombre.',
+            });
+          }
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Se ha guardado correctamente!',
+          }).then((result) => {
+            window.location.reload();
+          });
 
-      }
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        title: 'Guardando registro',
-        text: 'Cargando...',
-      });
-      Swal.showLoading();
-    }, err => {
-      console.log(err);
+        }, err => {
+          console.log(err);
 
-      if (err.name == "HttpErrorResponse") {
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'error',
-          title: 'Error al conectar',
-          text: 'Error de comunicación con el servidor',
+          if (err.name == "HttpErrorResponse") {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'Error al conectar',
+              text: 'Error de comunicación con el servidor',
+            });
+            return;
+          }
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'error',
+            title: err.name,
+            text: err.message,
+          });
         });
-        return;
-      }
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'error',
-        title: err.name,
-        text: err.message,
-      });
+      };
     });
 
   }

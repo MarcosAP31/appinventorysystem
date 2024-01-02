@@ -12,7 +12,7 @@ namespace INVENTARIO.Entity
         public string? Name { set; get; }
         public string? Kind { set; get; }
         public string? Label { set; get; }
-        public float? Price { set; get; }
+        public decimal? Price { set; get; }
         public string? UnitMeasurement { set; get; }
     }
 }
