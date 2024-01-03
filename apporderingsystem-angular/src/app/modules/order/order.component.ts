@@ -23,6 +23,7 @@ export class OrderComponent implements OnInit {
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
+  order: any;
   users: any;
   totalprice: number = 0;
   quantityorder: number = 0;
@@ -96,7 +97,7 @@ export class OrderComponent implements OnInit {
     this.storeService.getProducts(localStorage.getItem('token')).subscribe(response => {
       this.products = response;
     })
-    this.storeService.getUsersByRole('Encargado', localStorage.getItem('token')).subscribe(r => {
+    this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
       this.users = r;
     })
     /*this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
@@ -159,21 +160,25 @@ export class OrderComponent implements OnInit {
     console.log(this.elements)
     this.creating = false;
     this.storeService.getOrder(orderid, localStorage.getItem('token')).subscribe((response: any) => {
-      if (response.State == "Recibido") {
+      if (response.status == "Recibido") {
         this.selectState.nativeElement.disabled = true;
       } else {
         this.selectState.nativeElement.disabled = false;
       }
-      this.orderid = response.OrderId;
+      this.order = response;
+      // Similarly, format other date values
+      const formattedReceptionDate = response.receptionDate.toString().split('T')[0];
+      const formattedDispatchedDate = response.dispatchedDate.toString().split('T')[0];
+      const formattedDeliveryDate = response.deliveryDate.toString().split('T')[0];
       this.formEditOrder.setValue({
-        OrderDate: response.OrderDate,
-        ReceptionDate: response.ReceptionDate,
-        DispatchedDate: response.DispatchedDate,
-        DeliveryDate: response.DeliveryDate,
-        TotalPrice: response.TotalPrice,
-        Seller: response.Seller,
-        DeliveryMan: response.DeliveryMan,
-        State: response.State
+        OrderDate: response.orderDate,
+        ReceptionDate: formattedReceptionDate,
+        DispatchedDate: formattedDispatchedDate,
+        DeliveryDate: formattedDeliveryDate,
+        TotalPrice: response.totalPrice,
+        Seller: response.seller,
+        DeliveryMan: response.deliveryMan,
+        State: response.status
       });
     });
     this.storeService.getProductsByOrderId(orderid, localStorage.getItem('token')).subscribe(r => {
@@ -252,18 +257,18 @@ export class OrderComponent implements OnInit {
     if (dateString) {
       // Assuming your date format is "dd/MM/yyyy"
       const parts = dateString.split('/');
-      
+
       if (parts.length === 3) {
         const day = parseInt(parts[0], 10);
         const month = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
-  
+
         const date = new Date(year, month, day);
-  
+
         return date;
       }
     }
-  
+
     return null;
   }
   // Método para guardar el proveedor
@@ -360,7 +365,7 @@ export class OrderComponent implements OnInit {
     });
 
   }
-  submitOrder() {
+  updateOrder() {
     var order = new Order();
     var quantityorder = 0;
     this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {

@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public ProductController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -44,12 +44,12 @@ namespace INVENTARIO.Controllers
                     {
                         return Problem("The user enterd isn't valid");
                     }
-
+                    
                     var productList = await context.Product.ToListAsync();
-                    if (productList == null || !productList.Any())
+                    /*if (productList == null || !productList.Any())
                     {
                         return NotFound("No products found");
-                    }
+                    }*/
 
                     return Ok(productList);
 

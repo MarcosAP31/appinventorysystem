@@ -11,6 +11,6 @@ namespace INVENTARIO.Entity
         public int? OrderId { set; get; }
         public int? ProductId { set; get; }
         public int? Quantity { set; get; }
-        public int? Subtotal { set; get; }
+        public decimal? Subtotal { set; get; }
     }
 }

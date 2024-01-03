@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public UserController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -98,10 +98,10 @@ namespace INVENTARIO.Controllers
                     }
 
                     var userList = await context.User.ToListAsync();
-                    if (userList == null || !userList.Any())
+                    /*if (userList == null || !userList.Any())
                     {
                         return NotFound("No users found");
-                    }
+                    }*/
 
                     return Ok(userList);
 
@@ -249,10 +249,10 @@ namespace INVENTARIO.Controllers
                         .Where(u => u.Role == role)
                         .ToListAsync();
 
-                    if (userList == null || !userList.Any())
+                    /*if (userList == null || !userList.Any())
                     {
                         return NotFound("No user found for the specified userId.");
-                    }
+                    }*/
 
                     return Ok(userList);
 

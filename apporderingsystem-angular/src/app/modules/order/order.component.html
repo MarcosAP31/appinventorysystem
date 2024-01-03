@@ -184,7 +184,7 @@
     <div class="modal fade" id="modal-defaultorder" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form ngNativeValidate [formGroup]="formEditOrder" (ngSubmit)="submitOrder()">
+                <form ngNativeValidate [formGroup]="formEditOrder" (ngSubmit)="updateOrder()">
                     <div class="modal-header">
                         <h4 class="modal-title">Editing order</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
@@ -273,7 +273,7 @@
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
                             Close</button>
-                        <button type="button" class="btn btn-primary" (click)="submitOrder()"><i class="fa fa-save"></i>&nbsp;&nbsp;
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
                             Save</button>
                     </div>
                 </form>

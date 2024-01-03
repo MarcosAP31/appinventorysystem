@@ -19,7 +19,7 @@ namespace INVENTARIO.Controllers
     {
         private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public OrderController(SampleContext context_, cifrado cifrado_)
         {
             _context = context_;
@@ -46,10 +46,10 @@ namespace INVENTARIO.Controllers
                     }
 
                     var orderList = await context.Order.ToListAsync();
-                    if (orderList == null || !orderList.Any())
+                    /*if (orderList == null || !orderList.Any())
                     {
                         return NotFound("No orders found");
-                    }
+                    }*/
 
                     return Ok(orderList);
 
@@ -342,7 +342,7 @@ namespace INVENTARIO.Controllers
                 context.Order.Add(order);
                 await context.SaveChangesAsync();
 
-                return Ok("Was updated successfully");
+                return Ok(order.OrderId);
 
 
             }
