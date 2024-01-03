@@ -170,6 +170,7 @@ export class OrderComponent implements OnInit {
       const formattedReceptionDate = response.receptionDate.toString().split('T')[0];
       const formattedDispatchedDate = response.dispatchedDate.toString().split('T')[0];
       const formattedDeliveryDate = response.deliveryDate.toString().split('T')[0];
+      
       this.formEditOrder.setValue({
         OrderDate: response.orderDate,
         ReceptionDate: formattedReceptionDate,
