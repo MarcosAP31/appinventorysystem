@@ -12,7 +12,7 @@ namespace INVENTARIO.Entity
         public DateTime? ReceptionDate { set; get; }
         public DateTime? DispatchedDate { set; get; }
         public DateTime? DeliveryDate { set; get; }
-        public int? TotalPrice { set; get; }
+        public decimal? TotalPrice { set; get; }
         public string? Seller { set; get; }
         public string? DeliveryMan { set; get; }
         public string? Status { set; get; }

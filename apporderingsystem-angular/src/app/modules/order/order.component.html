@@ -46,9 +46,9 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let order of orders">
-                                    <td>{{order.orderDate}}</td>
-                                    <td>{{order.receptionDate}}</td>
-                                    <td>{{order.dispatchedDate}}</td>
+                                    <td>{{order.orderDate | date:"dd/MM/yyyy hh:mm:ss a"}}</td>
+                                    <td>{{order.receptionDate | date:"dd/MM/yyyy"}}</td>
+                                    <td>{{order.dispatchedDate | date:"dd/MM/yyyy"}}</td>
                                     <td>{{order.deliveryDate | date:"dd/MM/yyyy"}}</td>
                                     <td>S/.{{order.totalPrice.toFixed(2)}}</td>
                                     <td>{{order.seller}}</td>

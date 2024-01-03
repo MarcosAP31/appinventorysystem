@@ -248,33 +248,24 @@ export class OrderComponent implements OnInit {
   }
 
   // Add a helper method to convert string to Date
-convertToDate(dateString: string | null): Date | null {
-  if (dateString) {
-    // Assuming your date format is "dd/MM/yyyy h:mm:ss a"
-    const parts = dateString.split(/[\s/:]+/);
-    const year = parseInt(parts[2], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const day = parseInt(parts[0], 10);
-    const hours = parseInt(parts[3], 10);
-    const minutes = parseInt(parts[4], 10);
-    const seconds = parseInt(parts[5], 10);
-    const period = parts[6].toUpperCase() === 'AM' ? 'AM' : 'PM';
-
-    let date = new Date(year, month, day, hours, minutes, seconds);
-    
-    // Adjust for 12-hour format
-    if (period === 'PM' && hours < 12) {
-      date.setHours(hours + 12);
-    } else if (period === 'AM' && hours === 12) {
-      date.setHours(0);
+  convertToDate(dateString: string | null): Date | null {
+    if (dateString) {
+      // Assuming your date format is "dd/MM/yyyy"
+      const parts = dateString.split('/');
+      
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+  
+        const date = new Date(year, month, day);
+  
+        return date;
+      }
     }
-
-    return date;
+  
+    return null;
   }
-
-  return null;
-}
-
   // Método para guardar el proveedor
   submit() {
     this.finalprice = 0;
@@ -282,21 +273,22 @@ convertToDate(dateString: string | null): Date | null {
     for (const element of this.elements) {
       this.finalprice = this.finalprice + (element.quantity * element.price);
     }
+
     this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {
 
       order.orderDate = new Date(); // Assuming you want to use the current date and time
-      console.log(order)
-      order.receptionDate = this.convertToDate(this.formOrder.value.ReceptionDate);
-      order.dispatchedDate = this.convertToDate(this.formOrder.value.DispatchedDate);
-      order.deliveryDate = this.convertToDate(this.formOrder.value.DeliveryDate);
+      console.log(order.orderDate);
+      order.receptionDate = this.convertToDate(this.pipe.transform(this.formOrder.value.ReceptionDate, 'dd/MM/yyyy'));
+      order.dispatchedDate = this.convertToDate(this.pipe.transform(this.formOrder.value.DispatchedDate, 'dd/MM/yyyy'));
+      order.deliveryDate = this.convertToDate(this.pipe.transform(this.formOrder.value.DeliveryDate, 'dd/MM/yyyy'));
       order.totalPrice = this.finalprice;
       order.seller = user.name + " " + user.lastName;
-      
+
       this.storeService.getUser(this.formOrder.value.DeliveryMan, localStorage.getItem('token')).subscribe((u: any) => {
         order.deliveryMan = u.name + " " + u.lastName;
       })
       order.status = "Por atender";
-      
+      console.log(order)
     })
 
     if (!this.creating) {

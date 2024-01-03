@@ -60,6 +60,7 @@ namespace INVENTARIO.Controllers
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
 
