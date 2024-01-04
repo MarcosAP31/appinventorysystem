@@ -2,12 +2,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Users</h1>
+                <h1>Usuarios</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Maintenance</a></li>
-                    <li class="breadcrumb-item active">Users</li>
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Usuarios</li>
                 </ol>
             </div>
         </div>
@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
-                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; New User</button>
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo usuario</button>
                 <br><br>
             </div>
         </div>
@@ -26,19 +26,19 @@
             <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">User List</h3>
+                        <h3 class="card-title">Lista de usuarios</h3>
                     </div>
                     <div class="card-body table-responsive">
                         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Code</th>
-                                    <th>Name</th>
-                                    <th>Last Name</th>
-                                    <th>Phone</th>
-                                    <th>Position</th>
-                                    <th>Role</th>
-                                    <th>Email</th>
+                                    <th>Codigo</th>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th>Teléfono</th>
+                                    <th>Puesto</th>
+                                    <th>Rol</th>
+                                    <th>Correo</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -75,41 +75,41 @@
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formUser" (ngSubmit)="submit()">
                     <div class="modal-header">
-                        <h4 class="modal-title">{{creating?'New':'Editing'}} User</h4>
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Usuario</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="inputCode">Code</label>
+                            <label for="inputCode">Codigo</label>
                             <input type="text" class="form-control" Name="" formControlName="Code" 
-                                class="form-control" placeholder="Enter Code" required>
+                                class="form-control" placeholder="Ingrese código" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputName">Name</label>
+                            <label for="inputName">Nombre</label>
                             <input type="text" class="form-control" Name="" formControlName="Name" 
-                                class="form-control" placeholder="Enter Name" required>
+                                class="form-control" placeholder="Ingrese nombre" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputLast Name">Last Name</label>
+                            <label for="inputLast Name">Apellido</label>
                             <input type="text" class="form-control" Name="" formControlName="LastName" 
-                                class="form-control" placeholder="Enter Last Name" required>
+                                class="form-control" placeholder="Ingrese apellido" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputPhone">Phone</label>
+                            <label for="inputPhone">Teléfono</label>
                             <input type="text" class="form-control" Name="" formControlName="Phone" 
-                                class="form-control" placeholder="Enter Phone" required>
+                                class="form-control" placeholder="Ingrese teléfono" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputPhone">Position</label>
+                            <label for="inputPhone">Puesto</label>
                             <input type="text" class="form-control" Name="" formControlName="Position" 
-                                class="form-control" placeholder="Enter Phone" required>
+                                class="form-control" placeholder="Ingrese puesto" required>
                         </div>
                         <div class="form-group">
-                            <label for="selectRole">Role</label>
+                            <label for="selectRole">Rol</label>
                             <select name="Role" class="form-control" formControlName="Role">
-                                <option value="" disabled selected hidden>Select an state</option>
+                                <option value="" disabled selected hidden>Selecciona un rol</option>
                                 <option value="Encargado">Encargado</option>
                                 <option value="Vendedor">Vendedor</option>
                                 <option value="Delivery">Delivery</option>
@@ -117,20 +117,20 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail">Email</label>
+                            <label for="inputEmail">Correo</label>
                             <input type="text" class="form-control" Name="" formControlName="Email" 
-                                class="form-control" placeholder="Enter Email" required>
+                                class="form-control" placeholder="Ingrese correo" required>
                         </div>
                         <div class="form-group">
                             <label for="inputPassword">Password</label>
                             <input type="password" class="form-control" Name="" formControlName="Password" 
-                                class="form-control" placeholder="Enter Password" required>
+                                class="form-control" placeholder="Ingrese contraseña" required>
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
-                            Save</button>
+                            Guardar</button>
                     </div>
                 </form>
             </div>

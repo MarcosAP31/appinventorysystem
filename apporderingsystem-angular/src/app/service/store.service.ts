@@ -30,200 +30,133 @@ export class StoreService {
   constructor(public http: HttpClient) { }
 
   //Products
-  getProducts(token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/Product?token=${token}`);
+  getProducts(token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/Product?token=${encodedToken}`);
   }
-  getProduct(productId: number,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/Product/${productId}?token=${token}`);
+  getProduct(productId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/Product/${productId}?token=${encodedToken}`);
   }
-  insertProduct(product: Product,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/Product/insert?token=${token}`, product,
-    { responseType: 'text' });
+  insertProduct(product: Product, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.post(`${this.API_URI}/Product/insert?token=${encodedToken}`, product,
+      { responseType: 'text' });
   }
-  updateProduct(product:Product, token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.put(`${this.API_URI}/Product/update?token=${token}`, product,
-    { responseType: 'text' });
+  updateProduct(product: Product, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.put(`${this.API_URI}/Product/update?token=${encodedToken}`, product,
+      { responseType: 'text' });
   }
-  deleteProduct(productId: number,token:any): Observable<any> {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.delete(`${this.API_URI}/Product/${productId}?token=${token}`);
+  deleteProduct(productId: number, token: any): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.delete(`${this.API_URI}/Product/${productId}?token=${encodedToken}`);
   }
-  
+
   //Users
-  getUsers(token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/User?token=${token}`);
+  getUsers(token: any) {
+    // Codificar el token utilizando encodeURIComponent
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/User?token=${encodedToken}`);
   }
-  getUser(userId: number,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/User/${userId}?token=${token}`);
+  getUser(userId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/User/${userId}?token=${encodedToken}`);
   }
-  getUserByEmail(email: string,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/User/email/${email}?token=${token}`);
+  getUserByFullName(fullName: string, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/User/fullname/${fullName}?token=${encodedToken}`);
   }
-  getUsersByRole(role: string,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/User/role/${role}?token=${token}`);
+  getUserByEmail(email: string, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/User/email/${email}?token=${encodedToken}`);
   }
-  insertUser(user: User,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/User/insert?token=${token}`, user,
-    { responseType: 'text' });
+  getUsersByRole(role: string, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/User/role/${role}?token=${encodedToken}`);
   }
-  updateUser(user:User, token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.put(`${this.API_URI}/User/update?token=${token}`, user,
-    { responseType: 'text' });
+  insertUser(user: User, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.post(`${this.API_URI}/User/insert?token=${encodedToken}`, user,
+      { responseType: 'text' });
   }
-  deleteUser(userId: number,token:any): Observable<any> {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.delete(`${this.API_URI}/User/${userId}?token=${token}`);
+  updateUser(user: User, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.put(`${this.API_URI}/User/update?token=${encodedToken}`, user,
+      { responseType: 'text' });
+  }
+  deleteUser(userId: number, token: any): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.delete(`${this.API_URI}/User/${userId}?token=${encodedToken}`);
   }
   login(user: any): Observable<any> {
     return this.http.post(`${this.API_URI}/User/login`, user,
-    { responseType: 'text' });
+      { responseType: 'text' });
   }
   validateLogin(token: any): Observable<any> {
-    //let caracter=/\b[+]\b/g
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/User/validatelogin?token=${token}`, token,
-    { responseType: 'text' });
+    const encodedToken = encodeURIComponent(token);
+    return this.http.post(`${this.API_URI}/User/validatelogin?token=${encodedToken}`, token,
+      { responseType: 'text' });
   }
 
   //Orders
-  getOrders(token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/Order?token=${token}`);
+  getOrders(token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/Order?token=${encodedToken}`);
   }
-  getOrder(orderId: number,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/Order/${orderId}?token=${token}`);
+  getOrdersByRange(startDate: any, endDate: any, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/Order/range/${startDate}/${endDate}?token=${encodedToken}`);
   }
-  insertOrder(order: Order,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/Order/insert?token=${token}`, order,
-    { responseType: 'text' });
+  getOrder(orderId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/Order/${orderId}?token=${encodedToken}`);
   }
-  updateOrder(order:Order, token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.put(`${this.API_URI}/Order/update?token=${token}`, order,
-    { responseType: 'text' });
+  insertOrder(order: Order, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.post(`${this.API_URI}/Order/insert?token=${encodedToken}`, order,
+      { responseType: 'text' });
   }
-  deleteOrder(orderId: number,token:any): Observable<any> {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.delete(`${this.API_URI}/Order/${orderId}?token=${token}`);
+  updateOrder(order: Order, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.put(`${this.API_URI}/Order/update?token=${encodedToken}`, order,
+      { responseType: 'text' });
+  }
+  deleteOrder(orderId: number, token: any): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.delete(`${this.API_URI}/Order/${orderId}?token=${encodedToken}`);
   }
 
   //OrderXProducts
-  getOrderXProducts(token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/OrderXProduct?token=${token}`);
+  getOrderXProducts(token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/OrderXProduct?token=${encodedToken}`);
   }
-  getOrderXProduct(orderxproductId: number,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${token}`);
+  getOrderXProduct(orderxproductId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${encodedToken}`);
   }
-  insertOrderXProduct(orderxproduct: OrderXProduct,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.post(`${this.API_URI}/OrderXProduct/insert?token=${token}`, orderxproduct,
-    { responseType: 'text' });
+  insertOrderXProduct(orderxproduct: OrderXProduct, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.post(`${this.API_URI}/OrderXProduct/insert?token=${encodedToken}`, orderxproduct,
+      { responseType: 'text' });
   }
-  updateOrderXProduct(orderxproduct: OrderXProduct,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.put(`${this.API_URI}/OrderXProduct/update?token=${token}`, orderxproduct,
-    { responseType: 'text' });
+  updateOrderXProduct(orderxproduct: OrderXProduct, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.put(`${this.API_URI}/OrderXProduct/update?token=${encodedToken}`, orderxproduct,
+      { responseType: 'text' });
   }
-  deleteOrderXProduct(orderxproductId: number,token:any): Observable<any> {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.delete(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${token}`);
+  deleteOrderXProduct(orderxproductId: number, token: any): Observable<any> {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.delete(`${this.API_URI}/OrderXProduct/${orderxproductId}?token=${encodedToken}`);
   }
-  getProductsByOrderId(orderId:number,token:any) {
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/OrderXProduct/orderid/${orderId}?token=${token}`);
+  getProductsByOrderId(orderId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/OrderXProduct/orderid/${orderId}?token=${encodedToken}`);
   }
-  getTotalPriceByOrderId(orderId:number,token:any){
-    let caracter=new RegExp('[+]','g')
-    token=token.replace(caracter,'%2B')
-    let caracter1=new RegExp('[/]','g')
-    token=token.replace(caracter1,'%2F')
-    return this.http.get(`${this.API_URI}/OrderXProduct/totalprice/${orderId}?token=${token}`);
+  getTotalPriceByOrderId(orderId: number, token: any) {
+    const encodedToken = encodeURIComponent(token);
+    return this.http.get(`${this.API_URI}/OrderXProduct/totalprice/${orderId}?token=${encodedToken}`);
   }
   /*
     getMenuCategory(id: any,token:any): Observable<any> {

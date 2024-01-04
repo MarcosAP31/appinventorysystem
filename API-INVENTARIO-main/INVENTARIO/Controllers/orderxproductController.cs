@@ -17,12 +17,10 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class OrderXProductController : ControllerBase
     {
-        private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public OrderXProductController(SampleContext context_, cifrado cifrado_)
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        public OrderXProductController(cifrado cifrado_)
         {
-            _context = context_;
             _cifrado = cifrado_;
         }
 
@@ -100,7 +98,7 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("orderid/{orderId}")]
-        public async Task<ActionResult<IEnumerable<OrderXProduct>>> GetOrderXProductsByOrderId(int orderId, string token)
+        public async Task<ActionResult<IEnumerable<OrderXProduct>>> GetProductsByOrderId(int orderId, string token)
         {
             try
             {
@@ -121,9 +119,21 @@ namespace INVENTARIO.Controllers
                         return Problem("The user entered isn't valid");
                     }
 
-                    var orderxproductList = await context.OrderXProduct
-                        .Where(op => op.OrderId == orderId)
-                        .ToListAsync();
+                    var orderxproductList = await (from orderxproduct in context.OrderXProduct
+
+                                                   join product in context.Product on orderxproduct.ProductId equals product.ProductId
+                                                   where orderxproduct.OrderId==orderId
+                                                   select new
+                                                   {
+                                                       orderxproduct.OrderXProductId,
+                                                       orderxproduct.OrderId,
+                                                       orderxproduct.ProductId,
+                                                       orderxproduct.Quantity,
+                                                       orderxproduct.Subtotal,
+                                                       product.SKU,
+                                                       product.Name,
+                                                       product.Price
+                                                   }).ToListAsync();
 
                     if (orderxproductList == null || !orderxproductList.Any())
                     {

@@ -20,12 +20,13 @@ export class OrderComponent implements OnInit {
   @ViewChild('DeliveryDate') DeliveryDate: any;
   @ViewChild('ClientId') ClientId: any;
   @ViewChild('ProductId') ProductId: any;
+  filterForm: FormGroup;
   formOrder: FormGroup;
   formEditOrder: FormGroup;
   orders: any;
   order: any;
-  users: any;
-  totalprice: number = 0;
+  deliverymans: any;
+  sellers: any;
   quantityorder: number = 0;
   orderxproducts: any;
   elements: { productid: number, sku: string, product: string, price: number, quantity: number }[] = [];
@@ -42,7 +43,7 @@ export class OrderComponent implements OnInit {
   todayWithPipe: any;
   clients: any;
   products: any;
-  finalprice: number = 0;
+  finalprice: any = 0;
   addedproduct: boolean = false;
   recalledprod: boolean = false;
   invalidate: boolean = false;
@@ -52,12 +53,14 @@ export class OrderComponent implements OnInit {
     public form: FormBuilder,
     private storeService: StoreService,
   ) {
+    this.filterForm = this.form.group({
+      StartDate: [''],
+      EndDate: ['']
+    })
     this.formOrder = this.form.group({
-      ReceptionDate: [''],
-      DispatchedDate: [''],
-      DeliveryDate: [''],
       ProductId: [''],
       Quantity: [''],
+      Seller: [''],
       DeliveryMan: [''],
     });
     this.formEditOrder = this.form.group({
@@ -97,8 +100,11 @@ export class OrderComponent implements OnInit {
     this.storeService.getProducts(localStorage.getItem('token')).subscribe(response => {
       this.products = response;
     })
+    this.storeService.getUsersByRole('Vendedor', localStorage.getItem('token')).subscribe(r => {
+      this.sellers = r;
+    })
     this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
-      this.users = r;
+      this.deliverymans = r;
     })
     /*this.storeService.getUsersByRole('Repartidor', localStorage.getItem('token')).subscribe(r => {
       this.users = r;
@@ -111,7 +117,7 @@ export class OrderComponent implements OnInit {
       responsive: true
     };
     this.get();
-    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy  h:mm:ss a');
+    this.todayWithPipe = this.pipe.transform(Date.now(), 'dd/MM/yyyy h:mm:ss a');
   }
 
   // Método para editar un proveedor
@@ -125,6 +131,7 @@ export class OrderComponent implements OnInit {
           DeliveryDate: this.formOrder.value.DeliveryDate,
           ProductId: element.productid,
           Quantity: element.quantity,
+          Seller: this.formOrder.value.Seller,
           DeliveryMan: this.formOrder.value.DeliveryMan,
         });
         console.log(element)
@@ -149,6 +156,27 @@ export class OrderComponent implements OnInit {
       }
     })
   }
+
+  formatDate(datetimeString: string | Date): string {
+    const date = typeof datetimeString === 'string' ? new Date(datetimeString) : datetimeString;
+
+    if (isNaN(date.getTime())) {
+      // Handle invalid date
+      return 'Invalid Date';
+    }
+
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+    const seconds = ('0' + date.getSeconds()).slice(-2);
+    const meridian = date.getHours() >= 12 ? 'PM' : 'AM';
+
+    //return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${meridian}`;
+    return `${day}/${month}/${year}`;
+  }
+
   editOrder(orderid: any) {
     this.finalprice = 0;
     /*for (const element of this.elements) {
@@ -167,23 +195,43 @@ export class OrderComponent implements OnInit {
       }
       this.order = response;
       // Similarly, format other date values
-      const formattedReceptionDate = response.receptionDate.toString().split('T')[0];
-      const formattedDispatchedDate = response.dispatchedDate.toString().split('T')[0];
-      const formattedDeliveryDate = response.deliveryDate.toString().split('T')[0];
+      var formattedOrderDate = this.formatDate(response.orderDate);
+      var formattedReceptionDate:any=null;
+      var formattedDispatchedDate:any=null;
+      var formattedDeliveryDate:any=null;
+      if(response.receptionDate!=null){
+        formattedReceptionDate = response.receptionDate.toString().split('T')[0];
+      }
+      if(response.dispatchedDate!=null){
+        formattedDispatchedDate = response.dispatchedDate.toString().split('T')[0];
+      }
+      if(response.deliveryDate!=null){
+        formattedDeliveryDate = response.deliveryDate.toString().split('T')[0];
+      }
       
-      this.formEditOrder.setValue({
-        OrderDate: response.orderDate,
-        ReceptionDate: formattedReceptionDate,
-        DispatchedDate: formattedDispatchedDate,
-        DeliveryDate: formattedDeliveryDate,
-        TotalPrice: response.totalPrice,
-        Seller: response.seller,
-        DeliveryMan: response.deliveryMan,
-        State: response.status
-      });
+      this.storeService.getUserByFullName(this.order.seller, localStorage.getItem('token')).subscribe((s: any) => {
+        this.storeService.getUserByFullName(this.order.deliveryMan, localStorage.getItem('token')).subscribe((d: any) => {
+          this.formEditOrder.setValue({
+            OrderDate: formattedOrderDate,
+            ReceptionDate: formattedReceptionDate,
+            DispatchedDate: formattedDispatchedDate,
+            DeliveryDate: formattedDeliveryDate,
+            TotalPrice: response.totalPrice,
+            Seller: s.userId,
+            DeliveryMan: d.userId,
+            State: response.status
+          });
+        })
+
+      })
+
     });
     this.storeService.getProductsByOrderId(orderid, localStorage.getItem('token')).subscribe(r => {
       this.orderxproducts = r;
+      console.log(r);
+    })
+    this.storeService.getTotalPriceByOrderId(orderid, localStorage.getItem('token')).subscribe(r => {
+      this.finalprice = r
     })
 
     this.formEditOrder = this.form.group({
@@ -253,6 +301,45 @@ export class OrderComponent implements OnInit {
     });
   }
 
+  convertToDateTime(dateString: string | null): Date | null {
+    if (dateString) {
+      // Assuming your date-time format is "dd/MM/yyyy hh:mm:ss a"
+      const dateTimeParts = dateString.split(' ');
+  
+      if (dateTimeParts.length === 3) {
+        const datePart = dateTimeParts[0];
+        const timePart = dateTimeParts[1] + ' ' + dateTimeParts[2];
+  
+        const dateParts = datePart.split('/');
+        const timeParts = timePart.split(':');
+  
+        if (dateParts.length === 3 && timeParts.length === 3) {
+          const day = parseInt(dateParts[0], 10);
+          const month = parseInt(dateParts[1], 10) - 1;
+          const year = parseInt(dateParts[2], 10);
+  
+          const hour = parseInt(timeParts[0], 10);
+          const minute = parseInt(timeParts[1], 10);
+          const second = parseInt(timeParts[2], 10);
+  
+          // Create a Date object with the provided date and time
+          const date = new Date(year, month, day, hour, minute, second);
+  
+          // Set the time zone to Peru (GMT-5) using toLocaleString
+          const options = { timeZone: 'America/Lima' };
+          const peruTimeString = date.toLocaleString('en-US', options);
+  
+          // Convert the formatted time string back to a Date object
+          const peruDate = new Date(peruTimeString);
+  
+          return peruDate;
+        }
+      }
+    }
+  
+    return null;
+  }
+
   // Add a helper method to convert string to Date
   convertToDate(dateString: string | null): Date | null {
     if (dateString) {
@@ -272,6 +359,16 @@ export class OrderComponent implements OnInit {
 
     return null;
   }
+
+  applyFilter() {
+    const startDate = this.pipe.transform(this.filterForm.value.StartDate, 'yyyy-MM-dd 00:00:00.000');
+    const endDate = this.pipe.transform(this.filterForm.value.EndDate, 'yyyy-MM-dd 00:00:00.000');
+    console.log(startDate)
+    this.storeService.getOrdersByRange(startDate, endDate, localStorage.getItem('token')).subscribe(r => {
+      this.orders = r;
+      console.log(this.orders)
+    })
+  }
   // Método para guardar el proveedor
   submit() {
     this.finalprice = 0;
@@ -280,13 +377,11 @@ export class OrderComponent implements OnInit {
       this.finalprice = this.finalprice + (element.quantity * element.price);
     }
 
-    this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {
+    this.storeService.getUser(this.formOrder.value.Seller, localStorage.getItem('token')).subscribe((user: any) => {
 
-      order.orderDate = new Date(); // Assuming you want to use the current date and time
+      order.orderDate = this.convertToDate(this.todayWithPipe); // Assuming you want to use the current date and time
       console.log(order.orderDate);
-      order.receptionDate = this.convertToDate(this.pipe.transform(this.formOrder.value.ReceptionDate, 'dd/MM/yyyy'));
-      order.dispatchedDate = this.convertToDate(this.pipe.transform(this.formOrder.value.DispatchedDate, 'dd/MM/yyyy'));
-      order.deliveryDate = this.convertToDate(this.pipe.transform(this.formOrder.value.DeliveryDate, 'dd/MM/yyyy'));
+      
       order.totalPrice = this.finalprice;
       order.seller = user.name + " " + user.lastName;
 
@@ -322,6 +417,7 @@ export class OrderComponent implements OnInit {
         Swal.showLoading();
 
         solicitud.subscribe((r: any) => {
+          console.log(r)
           for (const element of this.elements) {
             var orderxproduct = new OrderXProduct();
             orderxproduct.orderId = r;
@@ -338,7 +434,7 @@ export class OrderComponent implements OnInit {
             title: 'Éxito',
             text: '¡Se ha guardado correctamente!',
           }).then(() => {
-            //window.location.reload();
+            window.location.reload();
           });
         }, err => {
           console.log(err);
@@ -368,20 +464,73 @@ export class OrderComponent implements OnInit {
   }
   updateOrder() {
     var order = new Order();
-    var quantityorder = 0;
-    this.storeService.getUser(Number(localStorage.getItem('userId')), localStorage.getItem('token')).subscribe((user: any) => {
-      order.orderDate = this.todayWithPipe;
+    this.storeService.getUser(this.formEditOrder.value.Seller, localStorage.getItem('token')).subscribe((user: any) => {
+      order.orderId = this.order.orderId;
+      order.orderDate = this.order.orderDate;
       order.receptionDate = this.formEditOrder.value.ReceptionDate;
       order.dispatchedDate = this.formEditOrder.value.DispatchedDate;
       order.deliveryDate = this.formEditOrder.value.DeliveryDate;
       order.totalPrice = this.formEditOrder.value.TotalPrice;
-      order.seller = user.Name + " " + user.LastName;
-      this.storeService.getUser(this.formOrder.value.DeliveryMan, localStorage.getItem('userId')).subscribe((u: any) => {
-        order.deliveryMan = u.Name + " " + u.LastName;
+      order.seller = user.name + " " + user.lastName;
+      this.storeService.getUser(this.formEditOrder.value.DeliveryMan, localStorage.getItem('token')).subscribe((u: any) => {
+        order.deliveryMan = u.name + " " + u.lastName;
       })
       order.status = this.formEditOrder.value.State;
 
     })
+    var solicitud = this.storeService.updateOrder(order, localStorage.getItem('token'));
+    Swal.fire({
+      title: 'Confirmación',
+      text: '¿Seguro de guardar el registro?',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: `Guardar`,
+      denyButtonText: `Cancelar`,
+      allowOutsideClick: false,
+      icon: 'info'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: 'Guardando registro',
+          text: 'Cargando...',
+        });
+        Swal.showLoading();
+
+        solicitud.subscribe(() => {
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'success',
+            title: 'Éxito',
+            text: '¡Se ha guardado correctamente!',
+          }).then(() => {
+            window.location.reload();
+          });
+        }, err => {
+          console.log(err);
+
+          if (err.Name == 'HttpErrorResponse') {
+            Swal.fire({
+              allowOutsideClick: false,
+              icon: 'error',
+              title: 'Error al conectar',
+              text: 'Error de comunicación con el servorderxproductidor',
+            });
+            return;
+          }
+          Swal.fire({
+            allowOutsideClick: false,
+            icon: 'error',
+            title: err.Name,
+            text: err.message,
+          });
+        });
+
+      } else if (result.isDenied) {
+        // Acción cancelada
+      }
+    });
 
   }
   //Metodo para agregar productos a una ordern

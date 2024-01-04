@@ -2,12 +2,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Order</h1>
+                <h1>Pedido</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Maintenance</a></li>
-                    <li class="breadcrumb-item active">Orders</li>
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Pedidos</li>
                 </ol>
             </div>
         </div>
@@ -18,35 +18,47 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
-                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; New Order</button>
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo pedido</button>
                 <br><br>
             </div>
         </div>
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilter()">
+           
+            
+                <label for="startDate">Fecha de inicio:</label>
+                <input type="date" Name="" formControlName="StartDate" style="margin-right:10px;">
+                    <label for="endDate">Fecha de fin:</label>
+                <input type="date"  Name="" formControlName="EndDate">
+            
+           
+            <button type="submit" class="btn btn-success">Buscar</button>
+            
+          </form>
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Order List</h3>
+                        <h3 class="card-title">Lista de Pedidos</h3>
                     </div>
                     <div class="card-body table-responsive">
                         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
                             class="table row-border hover">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Order Date</th>
-                                    <th>Reception Date</th>
-                                    <th>Dispatched Date</th>
-                                    <th>Delivery Date</th>
-                                    <th>Total Price</th>
-                                    <th>Seller</th>
-                                    <th>Delivery Man</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Fecha de pedido</th>
+                                    <th>Fecha de recepción</th>
+                                    <th>Fecha de despacho</th>
+                                    <th>Fecha de entrega</th>
+                                    <th>Precio total</th>
+                                    <th>Vendedor</th>
+                                    <th>Repartidor</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr *ngFor="let order of orders">
-                                    <td>{{order.orderDate | date:"dd/MM/yyyy hh:mm:ss a"}}</td>
+                                    <td>{{order.orderDate | date:"dd/MM/yyyy"}}</td>
                                     <td>{{order.receptionDate | date:"dd/MM/yyyy"}}</td>
                                     <td>{{order.dispatchedDate | date:"dd/MM/yyyy"}}</td>
                                     <td>{{order.deliveryDate | date:"dd/MM/yyyy"}}</td>
@@ -80,7 +92,7 @@
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formOrder" (ngSubmit)="submit()">
                     <div class="modal-header">
-                        <h4 class="modal-title">{{creating?'New':'Editing'}} order</h4>
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} pedido</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
                             aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -88,39 +100,32 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="inputReceptionDate">Reception Date</label>
-                            <input required type="date" class="form-control" Name="" formControlName="ReceptionDate"
-                                class="form-control" placeholder="Enter order date">
-                        </div>
-                        <div class="form-group">
-                            <label for="inputDispatchedDate">Dispatched Date</label>
-                            <input required type="date" class="form-control" Name="" formControlName="DispatchedDate"
-                                class="form-control" placeholder="Enter dispatched date">
-                        </div>
-                        <div class="form-group">
-                            <label for="inputDeliveryDate">Delivery Date</label>
-                            <input required type="date" class="form-control" Name="" formControlName="DeliveryDate"
-                                class="form-control" placeholder="Enter delivery date">
-                        </div>
-                        <div class="form-group">
-                            <label for="selectProduct">Product</label>
+                            <label for="selectProduct">Producto</label>
                             <select name="Product" class="form-control" formControlName="ProductId">
-                                <option value="" disabled selected hidden>Select a product</option>
+                                <option value="" disabled selected hidden>Selecciona un producto</option>
                                 <option *ngFor="let product of products" [value]="product.productId">
                                     {{product.name}}</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="inputQuantity">Quantity</label>
+                            <label for="inputQuantity">Cantidad</label>
                             <input required type="text" class="form-control" Name="" formControlName="Quantity"
-                                class="form-control" placeholder="Enter quantity" required>
+                                class="form-control" placeholder="Ingresa la cantidad" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputDeliveryMan">Delivery Man</label>
+                            <label for="inputSeller">Vendedor</label>
+                            <select name="Seller" class="form-control" formControlName="Seller">
+                                <option value="" disabled selected hidden>Selecciona un vendedor</option>
+                                <option *ngFor="let seller of sellers" [value]="seller.userId">
+                                    {{seller.name}} {{seller.lastName}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputDeliveryMan">Repartidor</label>
                             <select name="DeliveryMan" class="form-control" formControlName="DeliveryMan">
-                                <option value="" disabled selected hidden>Select a delivery man</option>
-                                <option *ngFor="let user of users" [value]="user.userId">
-                                    {{user.name}} {{user.lastName}}</option>
+                                <option value="" disabled selected hidden>Selecciona un repartidor</option>
+                                <option *ngFor="let deliveryman of deliverymans" [value]="deliveryman.userId">
+                                    {{deliveryman.name}} {{deliveryman.lastName}}</option>
                             </select>
                         </div>
                         
@@ -128,18 +133,18 @@
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-primary" (click)="addProduct()"><i
                                 class="fa fa-save"></i>&nbsp;&nbsp;
-                            Add</button>
+                            Agregar</button>
                     </div>
                     <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
                         class="table row-border hover">
                         <thead class="thead-light">
                             <tr>
                                 <th>SKU</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
                                 <th>Subtotal</th>
-                                <th>Actions</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -173,9 +178,9 @@
                     </table>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
-                            Close</button>
+                            Cerrar</button>
                         <button type="button" class="btn btn-primary" (click)="submit()"><i class="fa fa-save" ></i>&nbsp;&nbsp;
-                            Save</button>
+                            Guardar</button>
                     </div>
                 </form>
             </div>
@@ -186,7 +191,7 @@
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formEditOrder" (ngSubmit)="updateOrder()">
                     <div class="modal-header">
-                        <h4 class="modal-title">Editing order</h4>
+                        <h4 class="modal-title">Editando pedido</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal"
                             aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -194,47 +199,50 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="inputOrderDate">Order Date</label>
+                            <label for="inputOrderDate">Fecha de pedido</label>
                             <input readonly type="text" class="form-control" Name="" formControlName="OrderDate"
-                                class="form-control" placeholder="Enter order date" required>
+                                class="form-control" placeholder="Ingrese fecha de pedido" required>
                         </div>
-                        <div class="form-group">
-                            <label for="inputReceptionDate">Reception Date</label>
+                        <div class="form-group" *ngIf="formEditOrder.value.State === 'En proceso'">
+                            <label for="inputReceptionDate">Fecha de recepción</label>
                             <input required type="date" class="form-control" Name="" formControlName="ReceptionDate"
-                                class="form-control" placeholder="Enter order date">
+                                class="form-control" placeholder="Ingrese fecha de recepción">
                         </div>
-                        <div class="form-group">
-                            <label for="inputDispatchedDate">Dispatched Date</label>
+                        <div class="form-group" *ngIf="formEditOrder.value.State === 'En delivery'">
+                            <label for="inputDispatchedDate">Fecha de despacho</label>
                             <input required type="date" class="form-control" Name="" formControlName="DispatchedDate"
-                                class="form-control" placeholder="Enter dispatched date">
+                                class="form-control" placeholder="Ingrese fecha de despacho">
                         </div>
-                        <div class="form-group">
-                            <label for="inputDeliveryDate">Delivery Date</label>
+                        <div class="form-group" *ngIf="formEditOrder.value.State === 'Recibido'">
+                            <label for="inputDeliveryDate">Fecha de entrega</label>
                             <input required type="date" class="form-control" Name="" formControlName="DeliveryDate"
-                                class="form-control" placeholder="Enter delivery date">
+                                class="form-control" placeholder="Ingrese fecha de entrega">
                         </div>
                         <div class="form-group">
-                            <label for="inputTotalPrice">Total Price</label>
+                            <label for="inputTotalPrice">Precio total</label>
                             <input readonly type="text" class="form-control" Name="" formControlName="TotalPrice"
-                                class="form-control" placeholder="Enter total price" required>
+                                class="form-control" placeholder="Ingrese precio total" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputSeller">Seller</label>
-                            <input readonly type="text" class="form-control" Name="" formControlName="Seller"
-                                class="form-control" placeholder="Enter seller" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inputDeliveryMan">DeliveryMan</label>
-                            <select name="DeliveryMan" class="form-control" formControlName="DeliveryMan">
-                                <option value="" disabled selected hidden>Select a delivery man</option>
-                                <option *ngFor="let user of users" [value]="user.UserId">
-                                    {{user.name}} {{user.lastName}}</option>
+                            <label for="inputSeller">Vendedor</label>
+                            <select name="Seller" class="form-control" formControlName="Seller">
+                                <option value="" disabled selected hidden>Seleccione un vendedor</option>
+                                <option *ngFor="let seller of sellers" [value]="seller.userId">
+                                    {{seller.name}} {{seller.lastName}}</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="selectState">Status</label>
+                            <label for="inputDeliveryMan">Repartidor</label>
+                            <select name="DeliveryMan" class="form-control" formControlName="DeliveryMan">
+                                <option value="" disabled selected hidden>Seleccione un repartidor</option>
+                                <option *ngFor="let deliveryman of deliverymans" [value]="deliveryman.userId">
+                                    {{deliveryman.name}} {{deliveryman.lastName}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectState">Estado</label>
                             <select name="State" class="form-control" formControlName="State" #selectState>
-                                <option value="" disabled selected hidden>Select a state</option>
+                                <option value="" disabled selected hidden>Seleccione un estado</option>
                                 <option value="Por atender">Por atender</option>
                                 <option value="En proceso">En proceso</option>
                                 <option value="En delivery">En delivery</option>
@@ -242,24 +250,24 @@
                             </select>
                         </div>
                     </div>
-                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table"
+                    <table class="table"
                         class="table row-border hover">
                         <thead class="thead-light">
                             <tr>
                                 <th>SKU</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
                                 <th>Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let element of elements">
-                                <td>{{element.sku}}</td>
-                                <td>{{element.product}}</td>
-                                <td>S/.{{element.price}}</td>
-                                <td>{{element.quantity}}</td>
-                                <td>S/.{{(element.price*element.quantity).toFixed(2)}}</td>
+                            <tr *ngFor="let orderxproduct of orderxproducts">
+                                <td>{{orderxproduct.sku}}</td>
+                                <td>{{orderxproduct.name}}</td>
+                                <td>S/.{{orderxproduct.price}}</td>
+                                <td>{{orderxproduct.quantity}}</td>
+                                <td>S/.{{(orderxproduct.price*orderxproduct.quantity).toFixed(2)}}</td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -272,9 +280,9 @@
                     </table>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()">
-                            Close</button>
+                            Cerrar</button>
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
-                            Save</button>
+                            Guardar</button>
                     </div>
                 </form>
             </div>

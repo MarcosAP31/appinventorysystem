@@ -17,12 +17,10 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public UserController(SampleContext context_, cifrado cifrado_)
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        public UserController(cifrado cifrado_)
         {
-            _context = context_;
             _cifrado = cifrado_;
         }
         [HttpPost("login")]
@@ -153,6 +151,45 @@ namespace INVENTARIO.Controllers
             }
 
         }
+
+        [HttpGet("fullname/{fullName}")]
+        public async Task<ActionResult<User>> GetUserByFullName(string fullName, string token)
+        {
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
+
+                if (vtoken == null)
+                {
+                    return Problem("The token isn't valid!");
+                }
+                using (var context = new SampleContext(defaultConnection))
+                {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var _user = await context.User.FirstOrDefaultAsync(res => (res.Name+" "+res.LastName).Equals(fullName));
+
+                    if (_user == null)
+                    {
+                        return NotFound();
+                    }
+
+                    return Ok(_user);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
+
+        }
+
         [HttpGet("code/{code}")]
         public async Task<ActionResult<User>> GetUserByCode(string code, string token)
         {
@@ -190,6 +227,7 @@ namespace INVENTARIO.Controllers
             }
 
         }
+
         [HttpGet("email/{email}")]
         public async Task<ActionResult<User>> GetUserByEmail(string email, string token)
         {

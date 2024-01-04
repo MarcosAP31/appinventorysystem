@@ -17,12 +17,10 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public ProductController(SampleContext context_, cifrado cifrado_)
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        public ProductController(cifrado cifrado_)
         {
-            _context = context_;
             _cifrado = cifrado_;
         }
 

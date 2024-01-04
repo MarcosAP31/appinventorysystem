@@ -2,12 +2,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Products</h1>
+                <h1>Productos</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Maintenance</a></li>
-                    <li class="breadcrumb-item active">Products</li>
+                    <li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+                    <li class="breadcrumb-item active">Productos</li>
                 </ol>
             </div>
         </div>
@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-md-12">
                 <button type="button" class="btn btn-success" (click)="creating=true;" data-toggle="modal"
-                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; New Product</button>
+                    data-target="#modal-default"><i class="fa fa-plus"></i>&nbsp;&nbsp; Nuevo producto</button>
                 <br><br>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Products List</h3>
+                        <h3 class="card-title">Lista de productos</h3>
                     </div>
                     <div class="card-body table-responsive">
                         <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table" class="table row-border hover">
@@ -34,12 +34,12 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>SKU</th>
-                                    <th>Name</th>
-                                    <th>Kind</th>
-                                    <th>Label</th>
-                                    <th>Price</th>
-                                    <th>UnitMeasurement</th>
-                                    <th>Actions</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Etiquetas</th>
+                                    <th>Precio</th>
+                                    <th>Unidad de medida</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,7 +49,7 @@
                                     <td>{{product.name}}</td>
                                     <td>{{product.kind}}</td>
                                     <td>{{product.label}}</td>
-                                    <td>{{product.price.toFixed(2)}}</td>
+                                    <td>S/.{{product.price.toFixed(2)}}</td>
                                     <td>{{product.unitMeasurement}}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
@@ -75,7 +75,7 @@
             <div class="modal-content">
                 <form ngNativeValidate [formGroup]="formProduct" (ngSubmit)="submit()">
                     <div class="modal-header">
-                        <h4 class="modal-title">{{creating?'New':'Editing'}} Product</h4>
+                        <h4 class="modal-title">{{creating?'Nuevo':'Editando'}} Producto</h4>
                         <button (click)="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -84,38 +84,38 @@
                         <div class="form-group">
                             <label for="inputSKU">SKU</label>
                             <input required type="text" class="form-control" name="" formControlName="SKU" 
-                                class="form-control" placeholder="Enter SKU" required>
+                                class="form-control" placeholder="Ingrese SKU" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputName">Name</label>
+                            <label for="inputName">Nombre</label>
                             <input required type="text" class="form-control" name="" formControlName="Name" 
-                                class="form-control" placeholder="Enter name of product" required>
+                                class="form-control" placeholder="Ingrese nombre de producto" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputKind">Kind</label>
+                            <label for="inputKind">Tipo</label>
                             <input required type="text" class="form-control" name="" formControlName="Kind" 
-                                class="form-control" placeholder="Enter kind" required>
+                                class="form-control" placeholder="Ingrese tipo de producto" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputLabel">Label</label>
+                            <label for="inputLabel">Etiquetas</label>
                             <input required type="text" class="form-control" name="" formControlName="Label" 
-                                class="form-control" placeholder="Enter label" required>
+                                class="form-control" placeholder="Ingrese etiquetas" required>
                         </div>
                         <div class="form-group">
-                           <label for="inputPrice">Price</label>
+                           <label for="inputPrice">Precio</label>
                             <input required type="text" class="form-control" name="" formControlName="Price" 
-                                class="form-control" placeholder="Enter price" required>
+                                class="form-control" placeholder="Ingrese precio" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputUnitMeasurement">UnitMeasurement</label>
+                            <label for="inputUnitMeasurement">Unidad de Medida</label>
                              <input required type="text" class="form-control" name="" formControlName="UnitMeasurement" 
-                                 class="form-control" placeholder="Enter unit measurement" required>
+                                 class="form-control" placeholder="Ingrese unidad de medida" required>
                          </div>
                     </div>
                     <div class="modal-footer justify-content-between">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="closeModal()"> Cerrar</button>
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;
-                            Save</button>
+                            Guardar</button>
                     </div>
                 </form>
             </div>

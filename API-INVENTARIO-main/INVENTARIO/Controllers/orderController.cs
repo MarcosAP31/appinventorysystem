@@ -17,12 +17,10 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly SampleContext _context;
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public OrderController(SampleContext context_, cifrado cifrado_)
+        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        public OrderController(cifrado cifrado_)
         {
-            _context = context_;
             _cifrado = cifrado_;
         }
 
@@ -278,6 +276,48 @@ namespace INVENTARIO.Controllers
 
             }
         }
+
+        [HttpGet("range/{startDate}/{endDate}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByDateRange(DateTime startDate, DateTime endDate, string token)
+        {
+            try
+            {
+                var vtoken = _cifrado.validarToken(token);
+
+                if (vtoken == null)
+                {
+                    return Problem("The token isn't valid!");
+                }
+
+                using (var context = new SampleContext(defaultConnection))
+                {
+                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+
+                    if (user == null)
+                    {
+                        return Problem("The user entered isn't valid");
+                    }
+
+                    var ordersInRange = await context.Order
+                        .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
+                        .ToListAsync();
+
+                    /*if (ordersInRange == null || !ordersInRange.Any())
+                    {
+                        return NotFound("No orders found within the specified date range");
+                    }*/
+
+                    return Ok(ordersInRange);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPut("update")]
         public async Task<ActionResult> PutOrder(Order order, string token)
         {
