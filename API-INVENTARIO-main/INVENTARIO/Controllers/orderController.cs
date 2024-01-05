@@ -117,15 +117,14 @@ namespace INVENTARIO.Controllers
                 {
                     return Problem("The user entered isn't valid");
                 }
+                var orderList = await context.Order
+                       .Where(order => order.OrderDate == orderDate)
+                       .ToListAsync();
+                
 
-                var order = await context.Order.FindAsync(orderDate);
+               
 
-                if (order == null)
-                {
-                    return NotFound("No order found");
-                }
-
-                return Ok(order);
+                return Ok(orderList);
 
 
 
@@ -147,16 +146,11 @@ namespace INVENTARIO.Controllers
                 {
                     return Problem("The user entered isn't valid");
                 }
-                var order = await context.Order.FirstOrDefaultAsync(res => res.ReceptionDate.Equals(receptionDate));
+                var orderList = await context.Order
+                        .Where(order => order.ReceptionDate == receptionDate)
+                        .ToListAsync();
 
-                if (order == null)
-                {
-                    return NotFound("No order found");
-                }
-
-                return Ok(order);
-
-
+                return Ok(orderList);
 
             }
         }
@@ -179,15 +173,10 @@ namespace INVENTARIO.Controllers
                 else
                 {
 
-                    var order = await context.Order.FirstOrDefaultAsync(res => res.DispatchedDate.Equals(dispatchedDate));
-
-                    if (order == null)
-                    {
-                        return NotFound("No order found");
-                    }
-
-                    return Ok(order);
-
+                    var orderList = await context.Order
+                       .Where(order => order.DispatchedDate == dispatchedDate)
+                       .ToListAsync();
+                    return Ok(orderList);
 
                 }
             }
@@ -209,16 +198,11 @@ namespace INVENTARIO.Controllers
                     return Problem("The user entered isn't valid");
                 }
 
-                var order = await context.Order.FirstOrDefaultAsync(res => res.DeliveryDate.Equals(deliveryDate));
+                var orderList = await context.Order
+                       .Where(order => order.DeliveryDate == deliveryDate)
+                       .ToListAsync();
 
-                if (order == null)
-                {
-                    return NotFound("No order found");
-                }
-
-                return Ok(order);
-
-
+                return Ok(orderList);
             }
         }
         [HttpGet("seller/{seller}")]
@@ -238,14 +222,11 @@ namespace INVENTARIO.Controllers
                     return Problem("The user entered isn't valid");
                 }
 
-                var order = await context.Order.FirstOrDefaultAsync(res => res.Seller.Equals(seller));
+                var orderList = await context.Order
+                       .Where(order => order.Seller == seller)
+                       .ToListAsync();
 
-                if (order == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(order);
+                return Ok(orderList);
             }
         }
         [HttpGet("deliveryman/{deliveryMan}")]
@@ -265,15 +246,11 @@ namespace INVENTARIO.Controllers
                     return Problem("The user entered isn't valid");
                 }
 
-                var order = await context.Order.FirstOrDefaultAsync(res => res.DeliveryMan.Equals(deliveryMan));
+                var orderList = await context.Order
+                       .Where(order => order.DeliveryMan == deliveryMan)
+                       .ToListAsync();
 
-                if (order == null)
-                {
-                    return NotFound("No order found");
-                }
-
-                return Ok(order);
-
+                return Ok(orderList);
             }
         }
 

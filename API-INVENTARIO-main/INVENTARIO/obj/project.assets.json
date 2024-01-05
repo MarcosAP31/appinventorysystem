@@ -10534,11 +10534,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\appinventorysystem-oficial\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "projectUniqueName": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
       "projectName": "INVENTARIO",
-      "projectPath": "E:\\appinventorysystem-oficial\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "projectPath": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "E:\\appinventorysystem-oficial\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
+      "outputPath": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
