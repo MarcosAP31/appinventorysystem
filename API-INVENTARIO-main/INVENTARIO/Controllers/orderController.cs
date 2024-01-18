@@ -18,7 +18,7 @@ namespace INVENTARIO.Controllers
     public class OrderController : ControllerBase
     {
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public OrderController(cifrado cifrado_)
         {
             _cifrado = cifrado_;

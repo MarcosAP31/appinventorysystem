@@ -18,7 +18,7 @@ namespace INVENTARIO.Controllers
     public class OrderXProductController : ControllerBase
     {
         private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=sa;Password=marcos123;";
+        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
         public OrderXProductController(cifrado cifrado_)
         {
             _cifrado = cifrado_;

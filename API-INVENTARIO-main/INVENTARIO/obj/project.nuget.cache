@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5H0HLuwMXuzB6Euraziezaxz0pxgtdR+kFJdvokfEEuNP8ldPwxRunqK6qALp/M+fZLDXh/ktagbNRsiVidThA==",
+  "dgSpecHash": "CiT5rTARxIwj2zh/Buk/F9FOXwPXP7pcxC7m8sarF2NfFxnloMcoAhiajfs/YDwdFPHUewmjQu9Ubnu1pvOEcA==",
   "success": true,
-  "projectFilePath": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+  "projectFilePath": "C:\\Users\\user\\Desktop\\infoinformatica\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\grpc.core\\2.46.5\\grpc.core.2.46.5.nupkg.sha512",

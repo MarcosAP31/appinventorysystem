@@ -10534,11 +10534,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Desktop\\infoinformatica\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
       "projectName": "INVENTARIO",
-      "projectPath": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "projectPath": "C:\\Users\\user\\Desktop\\infoinformatica\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "E:\\marcos-arteta\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
+      "outputPath": "C:\\Users\\user\\Desktop\\infoinformatica\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -10631,7 +10631,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   },

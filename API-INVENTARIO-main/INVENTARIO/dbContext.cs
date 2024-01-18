@@ -24,9 +24,13 @@ namespace INVENTARIO
         }
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
-        }
 
+        }
         public DbSet<User> User { get; set; }
+        public DbSet<Client> Client { get; set; }
+        public DbSet<Entry> Entry { get; set; }
+        public DbSet<Output> Output { get; set; }
+
         public DbSet<Order> Order { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<OrderXProduct> OrderXProduct { get; set; }
