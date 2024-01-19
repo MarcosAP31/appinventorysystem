@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using INVENTARIO.Entity;
-using Microsoft.EntityFrameworkCore;
 using INVENTARIO.Services;
-using NuGet.Common;
-using Newtonsoft.Json.Linq;
 
 namespace INVENTARIO.Controllers
 {
@@ -17,83 +14,77 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class OrderXProductController : ControllerBase
     {
-        private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public OrderXProductController(cifrado cifrado_)
+        private readonly cifrado _cifrado;
+        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+
+        public OrderXProductController(cifrado cifrado)
         {
-            _cifrado = cifrado_;
+            _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
+        }
+
+        private async Task<User> ValidateTokenAndGetUser(string token, SampleContext context)
+        {
+            var vtoken = _cifrado.validarToken(token);
+
+            if (vtoken == null)
+            {
+                throw new UnauthorizedAccessException("The token isn't valid!");
+            }
+
+            return await context.User
+                .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderXProduct>>> GetOrderXProducts(string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                using (var context = new SampleContext(_defaultConnection))
+                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
-                {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    if (context.OrderXProduct == null)
+                    var orderXProductList = await context.OrderXProduct.ToListAsync();
+
+                    if (orderXProductList == null || !orderXProductList.Any())
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var orderxproductList = await context.OrderXProduct.ToListAsync();
-                        return Ok(orderxproductList);
-                    }
 
+                    return Ok(orderXProductList);
                 }
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
         }
-
 
         [HttpGet("{orderxproductId}")]
         public async Task<ActionResult<OrderXProduct>> GetOrderXProductById(int orderxproductId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                using (var context = new SampleContext(_defaultConnection))
+                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
-                {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    if (context.OrderXProduct == null)
+                    var orderXProduct = await context.OrderXProduct.FindAsync(orderxproductId);
+
+                    if (orderXProduct == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var orderxproduct = await context.OrderXProduct.FindAsync(orderxproductId);
 
-                        if (orderxproduct == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            return orderxproduct;
-                        }
-                    }
+                    return Ok(orderXProduct);
                 }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -102,45 +93,31 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                var vtoken = _cifrado.validarToken(token);
-
-                if (vtoken == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The token isn't valid!");
-                }
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-                using (var context = new SampleContext(defaultConnection))
-                {
-                    var user = await context.User
-                        .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+                    var orderXProductList = await context.OrderXProduct
+                        .Join(context.Product, oxp => oxp.ProductId, p => p.ProductId, (oxp, p) => new
+                        {
+                            oxp.OrderXProductId,
+                            oxp.OrderId,
+                            oxp.ProductId,
+                            oxp.Quantity,
+                            oxp.Subtotal,
+                            p.SKU,
+                            p.Name,
+                            p.Price
+                        })
+                        .Where(oxp => oxp.OrderId == orderId)
+                        .ToListAsync();
 
-                    if (user == null)
+                    if (orderXProductList == null || !orderXProductList.Any())
                     {
-                        return Problem("The user entered isn't valid");
+                        return NotFound($"No order x products found for the specified orderId: {orderId}.");
                     }
 
-                    var orderxproductList = await (from orderxproduct in context.OrderXProduct
-
-                                                   join product in context.Product on orderxproduct.ProductId equals product.ProductId
-                                                   where orderxproduct.OrderId==orderId
-                                                   select new
-                                                   {
-                                                       orderxproduct.OrderXProductId,
-                                                       orderxproduct.OrderId,
-                                                       orderxproduct.ProductId,
-                                                       orderxproduct.Quantity,
-                                                       orderxproduct.Subtotal,
-                                                       product.SKU,
-                                                       product.Name,
-                                                       product.Price
-                                                   }).ToListAsync();
-
-                    if (orderxproductList == null || !orderxproductList.Any())
-                    {
-                        return NotFound("No order x products found for the specified orderId.");
-                    }
-
-                    return Ok(orderxproductList);
+                    return Ok(orderXProductList);
                 }
             }
             catch (Exception ex)
@@ -151,49 +128,18 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("totalprice/{orderId}")]
-        public async Task<ActionResult<float>> GetTotalPriceByOrderId(int orderId, string token)
+        public async Task<ActionResult<decimal>> GetTotalPriceByOrderId(int orderId, string token)
         {
             try
             {
-                var vtoken = _cifrado.validarToken(token);
-
-                if (vtoken == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The token isn't valid!");
-                }
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-                using (var context = new SampleContext(defaultConnection))
-                {
-                    var user = await context.User
-                        .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-
-                    if (user == null)
-                    {
-                        return Problem("The user entered isn't valid");
-                    }
-
-                    var orderxproductList = await (from orderxproduct in context.OrderXProduct
-
-                                         join product in context.Product on orderxproduct.ProductId equals product.ProductId
-                                         where orderxproduct.OrderId==orderId
-                                         select new
-                                         {
-                                             orderxproduct.OrderXProductId,
-                                             orderxproduct.OrderId,
-                                             orderxproduct.ProductId,
-                                             orderxproduct.Quantity,
-                                             orderxproduct.Subtotal,
-                                             product.Name,
-                                             product.Price
-                                         }).ToListAsync();
-
-                    if (orderxproductList == null || !orderxproductList.Any())
-                    {
-                        return NotFound("No order x products found for the specified orderId.");
-                    }
-
-                    // Calculate total price
-                    decimal? totalPrice = orderxproductList.Sum(op => op.Price * op.Quantity);
+                    var totalPrice = await context.OrderXProduct
+                        .Where(oxp => oxp.OrderId == orderId)
+                        .Join(context.Product, oxp => oxp.ProductId, p => p.ProductId, (oxp, p) => oxp.Quantity * p.Price)
+                        .SumAsync();
 
                     return Ok(totalPrice);
                 }
@@ -206,112 +152,83 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> PutOrderXProduct(OrderXProduct orderxproduct, string token)
+        public async Task<ActionResult> PutOrderXProduct(OrderXProduct orderXProduct, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                using (var context = new SampleContext(_defaultConnection))
+                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
-                {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    var query = await context.OrderXProduct.FirstOrDefaultAsync(res => res.OrderXProductId.Equals(orderxproduct.OrderXProductId));
-                    if (query == null)
+                    var existingOrderXProduct = await context.OrderXProduct.FirstOrDefaultAsync(res => res.OrderXProductId.Equals(orderXProduct.OrderXProductId));
+
+                    if (existingOrderXProduct == null)
                     {
                         return Problem("No record found");
                     }
-                    else
-                    {
-                        query.OrderId = orderxproduct.OrderId;
-                        query.ProductId = orderxproduct.ProductId;
-                        query.Quantity = orderxproduct.Quantity;
-                        query.Subtotal = orderxproduct.Subtotal;
-                        context.SaveChanges();
-                        return Ok(query);
-                    }
+
+                    context.Entry(existingOrderXProduct).CurrentValues.SetValues(orderXProduct);
+                    await context.SaveChangesAsync();
+
+                    return Ok(existingOrderXProduct);
                 }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
             }
         }
 
-        // POST: api/user
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("insert")]
-        public async Task<ActionResult<OrderXProduct>> PostOrderXProduct(OrderXProduct orderxproduct, string token)
+        public async Task<ActionResult<OrderXProduct>> PostOrderXProduct(OrderXProduct orderXProduct, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
-            if (vtoken == null)
+            try
             {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    context.OrderXProduct.Add(orderxproduct);
+                    var user = await ValidateTokenAndGetUser(token, context);
+
+                    context.OrderXProduct.Add(orderXProduct);
                     await context.SaveChangesAsync();
+
                     return Ok("Was updated successfully");
                 }
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        // DELETE: api/user/5
         [HttpDelete("{orderxproductId}")]
-        public async Task<IActionResult> DeleteOrderXProduct(int orderxproductId, string token)
+        public async Task<IActionResult> DeleteOrderXProduct(int orderXProductId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                using (var context = new SampleContext(_defaultConnection))
+                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
-                {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    if (context.OrderXProduct == null)
+                    var existingOrderXProduct = await context.OrderXProduct.FindAsync(orderXProductId);
+
+                    if (existingOrderXProduct == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        var orderxproduct = await context.OrderXProduct.FindAsync(orderxproductId);
-                        if (orderxproduct == null)
-                        {
-                            return NotFound();
-                        }
-                        else
-                        {
-                            context.OrderXProduct.Remove(orderxproduct);
-                            await context.SaveChangesAsync();
 
-                            return NoContent();
-                        }
+                    context.OrderXProduct.Remove(existingOrderXProduct);
+                    await context.SaveChangesAsync();
 
-
-                    }
-
+                    return NoContent();
                 }
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

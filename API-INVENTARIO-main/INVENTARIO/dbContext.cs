@@ -30,8 +30,10 @@ namespace INVENTARIO
         public DbSet<Client> Client { get; set; }
         public DbSet<Entry> Entry { get; set; }
         public DbSet<Output> Output { get; set; }
+        public DbSet<Supplier> Supplier { get; set; }
 
         public DbSet<Order> Order { get; set; }
+        public DbSet<Ubication> Ubication { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<OrderXProduct> OrderXProduct { get; set; }
     }

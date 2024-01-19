@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using INVENTARIO.Entity;
-using Microsoft.EntityFrameworkCore;
 using INVENTARIO.Services;
-using NuGet.Common;
-using Newtonsoft.Json.Linq;
 
 namespace INVENTARIO.Controllers
 {
@@ -17,11 +13,24 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        private cifrado _cifrado;
-        string defaultConnection = "server = localhost; database = inventory;User ID=marcos;Password=marcos123;";
-        public ClientController(cifrado cifrado_)
+        private readonly cifrado _cifrado;
+        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+
+        public ClientController(cifrado cifrado)
         {
-            _cifrado = cifrado_;
+            _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
+        }
+
+        private async Task<User> ValidateTokenAndGetUser(string token, SampleContext context)
+        {
+            var vtoken = _cifrado.validarToken(token);
+
+            if (vtoken == null)
+            {
+                throw new UnauthorizedAccessException("The token isn't valid!");
+            }
+
+            return await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
         }
 
         [HttpGet]
@@ -29,30 +38,13 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                var vtoken = _cifrado.validarToken(token);
-
-                if (vtoken == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The token isn't valid!");
-                }
-                using (var context = new SampleContext(defaultConnection))
-                {
-                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                    if (user == null)
-                    {
-                        return Problem("The user enterd isn't valid");
-                    }
+                    var user = await ValidateTokenAndGetUser(token, context);
 
                     var clientList = await context.Client.ToListAsync();
-                    /*if (clientList == null || !clientList.Any())
-                    {
-                        return NotFound("No clients found");
-                    }*/
 
                     return Ok(clientList);
-
-
-
                 }
             }
             catch (Exception ex)
@@ -61,8 +53,6 @@ namespace INVENTARIO.Controllers
                 Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
-
-
         }
 
         [HttpGet("{clientId}")]
@@ -70,19 +60,9 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                var vtoken = _cifrado.validarToken(token);
-
-                if (vtoken == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The token isn't valid!");
-                }
-                using (var context = new SampleContext(defaultConnection))
-                {
-                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                    if (user == null)
-                    {
-                        return Problem("The user entered isn't valid");
-                    }
+                    var user = await ValidateTokenAndGetUser(token, context);
 
                     var client = await context.Client.FindAsync(clientId);
 
@@ -91,7 +71,6 @@ namespace INVENTARIO.Controllers
                         return NotFound("No client found");
                     }
                     return Ok(client);
-
                 }
             }
             catch (Exception ex)
@@ -99,99 +78,73 @@ namespace INVENTARIO.Controllers
                 // Log the exception or handle it appropriately
                 return StatusCode(500, "Internal server error");
             }
-
         }
 
         [HttpPut("update")]
         public async Task<ActionResult> PutClient(Client client, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
+            try
+            {
+                using (var context = new SampleContext(_defaultConnection))
+                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
-            if (vtoken == null)
-            {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
-                {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
-                    var query = await context.Client.FirstOrDefaultAsync(res => res.ClientId.Equals(client.ClientId));
-                    if (query == null)
+                    var existingClient = await context.Client.FirstOrDefaultAsync(res => res.ClientId.Equals(client.ClientId));
+                    if (existingClient == null)
                     {
                         return Problem("No record found");
                     }
 
-                    query.Name = client.Name;
-                    query.LastName = client.LastName;
-                    query.Birthday = client.Birthday;
-                    query.Sex = client.Sex;
-                    query.Department = client.Department;
-                    query.Province = client.Province;
-                    query.DeliveryMan = client.DeliveryMan;
-                    query.Status = client.Status;
-                    context.SaveChanges();
-                    return Ok(query);
+                    // Update client properties
+                    context.Entry(existingClient).CurrentValues.SetValues(client);
 
-
+                    await context.SaveChangesAsync();
+                    return Ok(existingClient);
                 }
             }
-
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        // POST: api/user
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("insert")]
         public async Task<ActionResult<Client>> PostClient(Client client, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
-            if (vtoken == null)
+            try
             {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The user entered isn't valid");
+                    var user = await ValidateTokenAndGetUser(token, context);
+
+                    var existingClient = await context.Client.FirstOrDefaultAsync(res => res.Name.Equals(client.Name) && res.LastName.Equals(client.LastName));
+                    if (existingClient != null)
+                    {
+                        return Problem("Client with the same name already exists");
+                    }
+
+                    context.Client.Add(client);
+                    await context.SaveChangesAsync();
+
+                    return Ok(client.ClientId);
                 }
-
-
-                context.Client.Add(client);
-                await context.SaveChangesAsync();
-
-                return Ok(client.ClientId);
-
-
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        // DELETE: api/user/5
         [HttpDelete("{clientId}")]
         public async Task<IActionResult> DeleteUser(int clientId, string token)
         {
-            var vtoken = _cifrado.validarToken(token);
-
-            if (vtoken == null)
+            try
             {
-                return Problem("The token isn't valid!");
-            }
-            using (var context = new SampleContext(defaultConnection))
-            {
-                var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                if (user == null)
+                using (var context = new SampleContext(_defaultConnection))
                 {
-                    return Problem("The user entered isn't valid");
-                }
-                else
-                {
+                    var user = await ValidateTokenAndGetUser(token, context);
 
                     var client = await context.Client.FindAsync(clientId);
                     if (client == null)
@@ -203,12 +156,13 @@ namespace INVENTARIO.Controllers
                     await context.SaveChangesAsync();
 
                     return NoContent();
-
-
-
                 }
             }
-
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
