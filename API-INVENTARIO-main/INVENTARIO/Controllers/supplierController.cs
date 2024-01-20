@@ -14,11 +14,12 @@ namespace INVENTARIO.Controllers
     public class SupplierController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+        private readonly SampleContext _context;
 
-        public SupplierController(ITokenService tokenService)
+        public SupplierController(ITokenService tokenService, SampleContext context)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpGet]
@@ -28,17 +29,10 @@ namespace INVENTARIO.Controllers
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var supplierList = await context.Supplier.ToListAsync();
+                var supplierList = await _context.Supplier.ToListAsync();
 
-                    if (supplierList == null || supplierList.Count == 0)
-                    {
-                        return NotFound();
-                    }
+                return Ok(supplierList);
 
-                    return Ok(supplierList);
-                }
             }
             catch (Exception ex)
             {
@@ -55,18 +49,16 @@ namespace INVENTARIO.Controllers
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                using (var context = new SampleContext(_defaultConnection))
+
+                var supplier = await _context.Supplier.FindAsync(supplierId);
+
+                if (supplier == null)
                 {
-
-                    var supplier = await context.Supplier.FindAsync(supplierId);
-
-                    if (supplier == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return Ok(supplier);
+                    return NotFound();
                 }
+
+                return Ok(supplier);
+
             }
             catch (Exception ex)
             {
@@ -77,38 +69,27 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> PutSupplier(Supplier supplier, string token)
+        public async Task<ActionResult> PutSupplier(Supplier supplier)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                using (var context = new SampleContext(_defaultConnection))
+
+                var existingSupplier = await _context.Supplier.FirstOrDefaultAsync(res => res.SupplierId.Equals(supplier.SupplierId));
+
+                if (existingSupplier == null)
                 {
-                    
-
-                    var existingSupplier = await context.Supplier.FirstOrDefaultAsync(res => res.SupplierId.Equals(supplier.SupplierId));
-
-                    if (existingSupplier == null)
-                    {
-                        return Problem("No record found");
-                    }
-
-                    existingSupplier.RUC = supplier.RUC;
-                    existingSupplier.BusinessName = supplier.BusinessName;
-                    existingSupplier.TradeName = supplier.TradeName;
-                    existingSupplier.Kind = supplier.Kind;
-                    existingSupplier.Department = supplier.Department;
-                    existingSupplier.Province = supplier.Province;
-                    existingSupplier.District = supplier.District;
-                    existingSupplier.Direction = supplier.Direction;
-                    existingSupplier.Phone = supplier.Phone;
-                    existingSupplier.Email = supplier.Email;
-
-                    await context.SaveChangesAsync();
-
-                    return Ok(existingSupplier);
+                    return Problem("No record found");
                 }
+
+                // Update client properties
+                _context.Entry(existingSupplier).CurrentValues.SetValues(supplier);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(existingSupplier);
+
             }
             catch (Exception ex)
             {
@@ -119,27 +100,25 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPost("insert")]
-        public async Task<ActionResult<Supplier>> PostSupplier(Supplier supplier, string token)
+        public async Task<ActionResult<Supplier>> PostSupplier(Supplier supplier)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                using (var context = new SampleContext(_defaultConnection))
+
+                var existingSupplier = await _context.Supplier.FirstOrDefaultAsync(res => res.BusinessName.Equals(supplier.BusinessName));
+
+                if (existingSupplier != null)
                 {
-
-                    var existingSupplier = await context.Supplier.FirstOrDefaultAsync(res => res.BusinessName.Equals(supplier.BusinessName));
-
-                    if (existingSupplier != null)
-                    {
-                        return Problem("Supplier with the same name already exists");
-                    }
-
-                    context.Supplier.Add(supplier);
-                    await context.SaveChangesAsync();
-
-                    return Ok(supplier.SupplierId);
+                    return Problem("Supplier with the same name already exists");
                 }
+
+                _context.Supplier.Add(supplier);
+                await _context.SaveChangesAsync();
+
+                return Ok(supplier.SupplierId);
+
             }
             catch (Exception ex)
             {
@@ -150,27 +129,25 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpDelete("{supplierId}")]
-        public async Task<IActionResult> DeleteSupplier(int supplierId, string token)
+        public async Task<IActionResult> DeleteSupplier(int supplierId)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                using (var context = new SampleContext(_defaultConnection))
+
+                var supplier = await _context.Supplier.FindAsync(supplierId);
+
+                if (supplier == null)
                 {
-
-                    var existingSupplier = await context.Supplier.FindAsync(supplierId);
-
-                    if (existingSupplier == null)
-                    {
-                        return NotFound();
-                    }
-
-                    context.Supplier.Remove(existingSupplier);
-                    await context.SaveChangesAsync();
-
-                    return NoContent();
+                    return NotFound();
                 }
+
+                _context.Supplier.Remove(supplier);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+
             }
             catch (Exception ex)
             {

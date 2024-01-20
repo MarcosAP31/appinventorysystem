@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using INVENTARIO.Entity;
 using INVENTARIO.Services;
+using INVENTARIO.Interfaces;
 
 namespace INVENTARIO.Controllers
 {
@@ -13,40 +14,27 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class EntryController : ControllerBase
     {
-        private readonly cifrado _cifrado;
-        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+        private readonly ITokenService _tokenService;
+        private readonly SampleContext _context;
 
-        public EntryController(cifrado cifrado)
+
+        public EntryController(ITokenService tokenService, SampleContext context)
         {
-            _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
-        }
-
-        private async Task<User> ValidateTokenAndGetUser(string token, SampleContext context)
-        {
-            var vtoken = _cifrado.validarToken(token);
-
-            if (vtoken == null)
-            {
-                throw new UnauthorizedAccessException("The token isn't valid!");
-            }
-
-            return await context.User
-                .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries(string token)
+        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries()
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                    var entryList = await context.Entry.ToListAsync();
+                var entryList = await _context.Entry.ToListAsync();
 
-                    return Ok(entryList);
-                }
+                return Ok(entryList);
+
             }
             catch (Exception ex)
             {
@@ -57,105 +45,100 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{entryId}")]
-        public async Task<ActionResult<Entry>> GetEntryById(int entryId, string token)
+        public async Task<ActionResult<Entry>> GetEntryById(int entryId)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var entry = await _context.Entry.FindAsync(entryId);
+
+                if (entry == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var entry = await context.Entry.FindAsync(entryId);
-
-                    if (entry == null)
-                    {
-                        return NotFound("No entry found");
-                    }
-                    return Ok(entry);
+                    return NotFound("No entry found");
                 }
+                return Ok(entry);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> PutEntry(Entry entry, string token)
+        public async Task<ActionResult> PutEntry(Entry entry)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var existingEntry = await _context.Entry.FirstOrDefaultAsync(res => res.EntryId.Equals(entry.EntryId));
+                if (existingEntry == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var existingEntry = await context.Entry.FirstOrDefaultAsync(res => res.EntryId.Equals(entry.EntryId));
-                    if (existingEntry == null)
-                    {
-                        return Problem("No record found");
-                    }
-
-                    // Update entry properties
-                    context.Entry(existingEntry).CurrentValues.SetValues(entry);
-
-                    await context.SaveChangesAsync();
-                    return Ok(existingEntry);
+                    return Problem("No record found");
                 }
+
+                // Update entry properties
+                _context.Entry(existingEntry).CurrentValues.SetValues(entry);
+
+                await _context.SaveChangesAsync();
+                return Ok(existingEntry);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPost("insert")]
-        public async Task<ActionResult<Entry>> PostEntry(Entry entry, string token)
+        public async Task<ActionResult<Entry>> PostEntry(Entry entry)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+                _context.Entry.Add(entry);
+                await _context.SaveChangesAsync();
 
-                    context.Entry.Add(entry);
-                    await context.SaveChangesAsync();
+                return Ok(entry.EntryId);
 
-                    return Ok(entry.EntryId);
-                }
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpDelete("{entryId}")]
-        public async Task<IActionResult> DeleteEntry(int entryId, string token)
+        public async Task<IActionResult> DeleteEntry(int entryId)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var entry = await _context.Entry.FindAsync(entryId);
+                if (entry == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var entry = await context.Entry.FindAsync(entryId);
-                    if (entry == null)
-                    {
-                        return NotFound();
-                    }
-
-                    context.Entry.Remove(entry);
-                    await context.SaveChangesAsync();
-
-                    return NoContent();
+                    return NotFound();
                 }
+
+                _context.Entry.Remove(entry);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

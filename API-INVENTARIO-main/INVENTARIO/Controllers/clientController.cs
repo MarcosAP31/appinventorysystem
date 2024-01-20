@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using INVENTARIO.Entity;
 using INVENTARIO.Services;
+using INVENTARIO.Interfaces;
 
 namespace INVENTARIO.Controllers
 {
@@ -13,39 +14,30 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        private readonly cifrado _cifrado;
-        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+        private readonly ITokenService _tokenService;
+        private readonly SampleContext _context;
 
-        public ClientController(cifrado cifrado)
+        public ClientController(ITokenService tokenService, SampleContext context)
         {
-            _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
-        }
-
-        private async Task<User> ValidateTokenAndGetUser(string token, SampleContext context)
-        {
-            var vtoken = _cifrado.validarToken(token);
-
-            if (vtoken == null)
-            {
-                throw new UnauthorizedAccessException("The token isn't valid!");
-            }
-
-            return await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClients(string token)
+        public async Task<ActionResult<IEnumerable<Client>>> GetClients()
         {
+
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var clientList = await _context.Client.ToListAsync();
+                /*if (clientList == null || clientList.Count == 0)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                    return NotFound();
+                }¨*/
 
-                    var clientList = await context.Client.ToListAsync();
-
-                    return Ok(clientList);
-                }
+                return Ok(clientList);
             }
             catch (Exception ex)
             {
@@ -56,26 +48,25 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{clientId}")]
-        public async Task<ActionResult<Client>> GetClientById(int clientId, string token)
+        public async Task<ActionResult<Client>> GetClientById(int clientId)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var client = await _context.Client.FindAsync(clientId);
+
+                if (client == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var client = await context.Client.FindAsync(clientId);
-
-                    if (client == null)
-                    {
-                        return NotFound("No client found");
-                    }
-                    return Ok(client);
+                    return NotFound("No client found");
                 }
+                return Ok(client);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -85,26 +76,25 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var existingClient = await _context.Client.FirstOrDefaultAsync(res => res.ClientId.Equals(client.ClientId));
+                if (existingClient == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var existingClient = await context.Client.FirstOrDefaultAsync(res => res.ClientId.Equals(client.ClientId));
-                    if (existingClient == null)
-                    {
-                        return Problem("No record found");
-                    }
-
-                    // Update client properties
-                    context.Entry(existingClient).CurrentValues.SetValues(client);
-
-                    await context.SaveChangesAsync();
-                    return Ok(existingClient);
+                    return Problem("No record found");
                 }
+
+                // Update client properties
+                _context.Entry(existingClient).CurrentValues.SetValues(client);
+
+                await _context.SaveChangesAsync();
+                return Ok(existingClient);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -114,25 +104,24 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var existingClient = await _context.Client.FirstOrDefaultAsync(res => res.Name.Equals(client.Name) && res.LastName.Equals(client.LastName));
+                if (existingClient != null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var existingClient = await context.Client.FirstOrDefaultAsync(res => res.Name.Equals(client.Name) && res.LastName.Equals(client.LastName));
-                    if (existingClient != null)
-                    {
-                        return Problem("Client with the same name already exists");
-                    }
-
-                    context.Client.Add(client);
-                    await context.SaveChangesAsync();
-
-                    return Ok(client.ClientId);
+                    return Problem("Client with the same name already exists");
                 }
+
+                _context.Client.Add(client);
+                await _context.SaveChangesAsync();
+
+                return Ok(client.ClientId);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -142,25 +131,24 @@ namespace INVENTARIO.Controllers
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var client = await _context.Client.FindAsync(clientId);
+                if (client == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var client = await context.Client.FindAsync(clientId);
-                    if (client == null)
-                    {
-                        return NotFound();
-                    }
-
-                    context.Client.Remove(client);
-                    await context.SaveChangesAsync();
-
-                    return NoContent();
+                    return NotFound();
                 }
+
+                _context.Client.Remove(client);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

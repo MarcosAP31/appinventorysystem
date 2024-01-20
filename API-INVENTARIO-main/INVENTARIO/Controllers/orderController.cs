@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using INVENTARIO.Entity;
 using INVENTARIO.Services;
+using INVENTARIO.Interfaces;
 
 namespace INVENTARIO.Controllers
 {
@@ -14,40 +15,26 @@ namespace INVENTARIO.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly cifrado _cifrado;
-        private readonly string _defaultConnection = "server=localhost;database=inventory;User ID=marcos;Password=marcos123;";
+        private readonly ITokenService _tokenService;
+        private readonly SampleContext _context;
 
-        public OrderController(cifrado cifrado)
+        public OrderController(ITokenService tokenService, SampleContext context)
         {
-            _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
-        }
-
-        private async Task<User> ValidateTokenAndGetUser(string token, SampleContext context)
-        {
-            var vtoken = _cifrado.validarToken(token);
-
-            if (vtoken == null)
-            {
-                throw new UnauthorizedAccessException("The token isn't valid!");
-            }
-
-            return await context.User
-                .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders(string token)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                    var orderList = await context.Order.ToListAsync();
+                var orderList = await _context.Order.ToListAsync();
 
-                    return Ok(orderList);
-                }
+                return Ok(orderList);
+
             }
             catch (Exception ex)
             {
@@ -58,49 +45,47 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{orderId}")]
-        public async Task<ActionResult<Order>> GetOrderById(int orderId, string token)
+        public async Task<ActionResult<Order>> GetOrderById(int orderId)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var order = await _context.Order.FindAsync(orderId);
+
+                if (order == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var order = await context.Order.FindAsync(orderId);
-
-                    if (order == null)
-                    {
-                        return NotFound("No order found");
-                    }
-                    return Ok(order);
+                    return NotFound("No order found");
                 }
+                return Ok(order);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("orderdate/{orderDate}")]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrderByOrderDate(DateTime orderDate, string token)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrderByOrderDate(DateTime orderDate)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                    var orderList = await context.Order
-                        .Where(order => order.OrderDate == orderDate)
-                        .ToListAsync();
+                var orderList = await _context.Order
+                    .Where(order => order.OrderDate == orderDate)
+                    .ToListAsync();
 
-                    return Ok(orderList);
-                }
+                return Ok(orderList);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -108,20 +93,18 @@ namespace INVENTARIO.Controllers
         // Other date-specific methods (reception, dispatched, delivery) follow the same pattern
 
         [HttpGet("range/{startDate}/{endDate}")]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByDateRange(DateTime startDate, DateTime endDate, string token)
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                    var ordersInRange = await context.Order
-                        .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
-                        .ToListAsync();
+                var ordersInRange = await _context.Order
+                    .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
+                    .ToListAsync();
 
-                    return Ok(ordersInRange);
-                }
+                return Ok(ordersInRange);
+
             }
             catch (Exception ex)
             {
@@ -132,80 +115,77 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> PutOrder(Order order, string token)
+        public async Task<ActionResult> PutOrder(Order order)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+
+                var existingOrder = await _context.Order.FirstOrDefaultAsync(res => res.OrderId.Equals(order.OrderId));
+                if (existingOrder == null)
                 {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var existingOrder = await context.Order.FirstOrDefaultAsync(res => res.OrderId.Equals(order.OrderId));
-                    if (existingOrder == null)
-                    {
-                        return Problem("No record found");
-                    }
-
-                    // Update order properties
-                    context.Entry(existingOrder).CurrentValues.SetValues(order);
-
-                    await context.SaveChangesAsync();
-                    return Ok(existingOrder);
+                    return Problem("No record found");
                 }
+
+                // Update order properties
+                _context.Entry(existingOrder).CurrentValues.SetValues(order);
+
+                await _context.SaveChangesAsync();
+                return Ok(existingOrder);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPost("insert")]
-        public async Task<ActionResult<Order>> PostOrder(Order order, string token)
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                    context.Order.Add(order);
-                    await context.SaveChangesAsync();
+                _context.Order.Add(order);
+                await _context.SaveChangesAsync();
 
-                    return Ok(order.OrderId);
-                }
+                return Ok(order.OrderId);
+
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpDelete("{orderId}")]
-        public async Task<IActionResult> DeleteOrder(int orderId, string token)
+        public async Task<IActionResult> DeleteOrder(int orderId)
         {
             try
             {
-                using (var context = new SampleContext(_defaultConnection))
-                {
-                    var user = await ValidateTokenAndGetUser(token, context);
-
-                    var order = await context.Order.FindAsync(orderId);
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+               
+                    var order = await _context.Order.FindAsync(orderId);
                     if (order == null)
                     {
                         return NotFound();
                     }
 
-                    context.Order.Remove(order);
-                    await context.SaveChangesAsync();
+                    _context.Order.Remove(order);
+                    await _context.SaveChangesAsync();
 
                     return NoContent();
-                }
+ 
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
         }

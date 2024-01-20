@@ -6,10 +6,12 @@ namespace INVENTARIO.Services
     public class TokenService
     {
         private readonly cifrado _cifrado;
+        private readonly SampleContext _context;
 
-        public TokenService(cifrado cifrado)
+        public TokenService(cifrado cifrado, SampleContext context)
         {
             _cifrado = cifrado ?? throw new ArgumentNullException(nameof(cifrado));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<User> GetUserFromTokenAsync(HttpContext httpContext)
@@ -22,11 +24,8 @@ namespace INVENTARIO.Services
                 throw new UnauthorizedAccessException("The token isn't valid!");
             }
 
-            using (var context = new SampleContext("server = localhost; database = inventory;User ID=marcos;Password=marcos123;"))
-            {
-                return await context.User
-                    .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-            }
+            return await _context.User
+                .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
         }
     }
 }

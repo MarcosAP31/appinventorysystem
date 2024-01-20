@@ -5,16 +5,13 @@ using System.Reflection.Emit;
 
 namespace INVENTARIO
 {
-        public class SampleContext : DbContext
+    public class SampleContext : DbContext
+    {
+        public SampleContext(DbContextOptions<SampleContext> options) : base(options)
         {
-            public SampleContext(DbContextOptions<SampleContext> options) : base(options)
-            {
-            }
-        private readonly string? _connectionString;
-        public SampleContext(string connectionString)
-        {
-            _connectionString = connectionString;
         }
+        private readonly string? _connectionString;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (_connectionString != null)
