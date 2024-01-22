@@ -1,9 +1,10 @@
 ﻿using INVENTARIO.Entity;
+using INVENTARIO.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace INVENTARIO.Services
 {
-    public class TokenService
+    public class TokenService:ITokenService
     {
         private readonly cifrado _cifrado;
         private readonly SampleContext _context;
@@ -16,7 +17,18 @@ namespace INVENTARIO.Services
 
         public async Task<User> GetUserFromTokenAsync(HttpContext httpContext)
         {
-            var token = httpContext.Request.Headers["Authorization"];
+            string token = httpContext.Request.Headers["Authorization"];
+            Console.WriteLine(token);
+            // Verificar si la cadena comienza con "Bearer "
+            if (token != null && token.StartsWith("Bearer "))
+            {
+                // Quitar "Bearer " y obtener solo la parte del token
+                token = token.Substring("Bearer ".Length);
+                
+            }
+
+            
+
             var vtoken = _cifrado.validarToken(token);
 
             if (vtoken == null)
@@ -26,6 +38,20 @@ namespace INVENTARIO.Services
 
             return await _context.User
                 .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
+        }
+        public string GenerateToken(string text)
+        {
+            return _cifrado.EncryptStringAES(text);
+        }
+
+        public Task<User> GetUserFromToken(HttpContext httpContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GenerateTokenAsync(string text)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using INVENTARIO.Services;
 using NuGet.Common;
 using Newtonsoft.Json.Linq;
 using INVENTARIO.Interfaces;
+using System.Net.Http;
 
 namespace INVENTARIO.Controllers
 {
@@ -19,28 +21,38 @@ namespace INVENTARIO.Controllers
     public class UserController : ControllerBase
     {
         private readonly ITokenService _tokenService;
+        private readonly cifrado _cifrado;
         private readonly SampleContext _context;
+        private string defaultConnection;
         public UserController(ITokenService tokenService, SampleContext context)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+
+            defaultConnection="server = localhost; database = inventory;User ID=sa;Password=marcos123;";
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(User user)
         {
             try
             {
-                using (var context = new SampleContext(defaultConnection))
+                using (var httpClient = new HttpClient())
                 {
-                    var result = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
+                    var result = await _context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
                     if (result == null)
                     {
                         return Problem("No user found");
                     }
-                    var cifrado = _cifrado.EncryptStringAES(defaultConnection.Replace(" ", "") + " " + user.Email + " " + user.Password);
+                    var cifrado = _tokenService.GenerateToken(defaultConnection.Replace(" ", "") + " " + user.Email + " " + user.Password);
+                    
+                    // Agregar el token cifrado al encabezado
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", cifrado);
+
 
                     return Ok(cifrado);
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -50,25 +62,12 @@ namespace INVENTARIO.Controllers
 
         }
         [HttpPost("validatelogin")]
-        public async Task<IActionResult> ValidateLogin(string token)
+        public async Task<IActionResult> ValidateLogin()
         {
             try
             {
-                var vtoken = _cifrado.validarToken(token);
-
-                if (vtoken == null)
-                {
-                    return Problem("The token isn't valid!");
-                }
-                using (var context = new SampleContext(defaultConnection))
-                {
-                    var user = await context.User.FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
-                    if (user == null)
-                    {
-                        return Problem("The user isn't valid");
-                    }
-                    return Ok(user);
-                }
+                var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -232,7 +231,7 @@ namespace INVENTARIO.Controllers
                 Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
-            
+
         }
 
         [HttpGet("code/{code}")]
@@ -242,7 +241,7 @@ namespace INVENTARIO.Controllers
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FirstOrDefaultAsync(res =>res.Code.Equals(code));
+                var _user = await _context.User.FirstOrDefaultAsync(res => res.Code.Equals(code));
 
                 if (_user == null)
                 {
@@ -268,7 +267,7 @@ namespace INVENTARIO.Controllers
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FirstOrDefaultAsync(res =>res.Email.Equals(email));
+                var _user = await _context.User.FirstOrDefaultAsync(res => res.Email.Equals(email));
 
                 if (_user == null)
                 {
@@ -311,7 +310,7 @@ namespace INVENTARIO.Controllers
                 Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
-            
+
 
         }
 
