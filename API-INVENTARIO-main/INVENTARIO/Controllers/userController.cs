@@ -18,13 +18,13 @@ namespace INVENTARIO.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ITokenService _tokenService;
         private readonly cifrado _cifrado;
         private readonly SampleContext _context;
         private string defaultConnection;
-        public UserController(ITokenService tokenService, SampleContext context)
+        public UsersController(ITokenService tokenService, SampleContext context)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -32,13 +32,13 @@ namespace INVENTARIO.Controllers
             defaultConnection= "server = localhost; database = inventory; Integrated Security=True;";
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(User user)
+        public async Task<IActionResult> Login(Users user)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var result = await _context.User.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
+                    var result = await _context.Users.FirstOrDefaultAsync(res => res.Email.Equals(user.Email) && res.Password.Equals(user.Password));
                     if (result == null)
                     {
                         return Problem("No user found");
@@ -79,14 +79,14 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
         {
 
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var userList = await _context.User.ToListAsync();
+                var userList = await _context.Users.ToListAsync();
                 /*if (userList == null || userList.Count == 0)
                 {
                     return NotFound();
@@ -103,13 +103,13 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<User>> GetUserById(int userId)
+        public async Task<ActionResult<Users>> GetUserById(int userId)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FindAsync(userId);
+                var _user = await _context.Users.FindAsync(userId);
 
                 if (_user == null)
                 {
@@ -127,23 +127,23 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> PutUser(User _user)
+        public async Task<ActionResult> PutUsers(Users _user)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var existingUser = await _context.User.FirstOrDefaultAsync(res => res.UserId.Equals(_user.UserId));
-                if (existingUser == null)
+                var existingUsers = await _context.Users.FirstOrDefaultAsync(res => res.UserId.Equals(_user.UserId));
+                if (existingUsers == null)
                 {
                     return Problem("No record found");
                 }
 
                 // Update user properties
-                _context.Entry(existingUser).CurrentValues.SetValues(_user);
+                _context.Entry(existingUsers).CurrentValues.SetValues(_user);
 
                 await _context.SaveChangesAsync();
-                return Ok(existingUser);
+                return Ok(existingUsers);
 
             }
             catch (Exception ex)
@@ -155,19 +155,19 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpPost("insert")]
-        public async Task<ActionResult<User>> PostUser(User _user)
+        public async Task<ActionResult<Users>> PostUsers(Users _user)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var existingUser = await _context.User.FirstOrDefaultAsync(res => res.Name.Equals(_user.Name) && res.LastName.Equals(_user.LastName));
-                if (existingUser != null)
+                var existingUsers = await _context.Users.FirstOrDefaultAsync(res => res.Name.Equals(_user.Name) && res.LastName.Equals(_user.LastName));
+                if (existingUsers != null)
                 {
-                    return Problem("User with the same name already exists");
+                    return Problem("Users with the same name already exists");
                 }
 
-                _context.User.Add(_user);
+                _context.Users.Add(_user);
                 await _context.SaveChangesAsync();
 
                 return Ok(_user.UserId);
@@ -182,19 +182,19 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> DeleteUser(int userId)
+        public async Task<IActionResult> DeleteUsers(int userId)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FindAsync(userId);
+                var _user = await _context.Users.FindAsync(userId);
                 if (_user == null)
                 {
                     return NotFound();
                 }
 
-                _context.User.Remove(_user);
+                _context.Users.Remove(_user);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
@@ -209,13 +209,13 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("fullname/{fullName}")]
-        public async Task<ActionResult<User>> GetUserByFullName(string fullName)
+        public async Task<ActionResult<Users>> GetUserByFullName(string fullName)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FirstOrDefaultAsync(res => (res.Name + " " + res.LastName).Equals(fullName));
+                var _user = await _context.Users.FirstOrDefaultAsync(res => (res.Name + " " + res.LastName).Equals(fullName));
 
                 if (_user == null)
                 {
@@ -235,13 +235,13 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("code/{code}")]
-        public async Task<ActionResult<User>> GetUserByCode(string code)
+        public async Task<ActionResult<Users>> GetUserByCode(string code)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FirstOrDefaultAsync(res => res.Code.Equals(code));
+                var _user = await _context.Users.FirstOrDefaultAsync(res => res.Code.Equals(code));
 
                 if (_user == null)
                 {
@@ -261,13 +261,13 @@ namespace INVENTARIO.Controllers
         }
 
         [HttpGet("email/{email}")]
-        public async Task<ActionResult<User>> GetUserByEmail(string email)
+        public async Task<ActionResult<Users>> GetUserByEmail(string email)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var _user = await _context.User.FirstOrDefaultAsync(res => res.Email.Equals(email));
+                var _user = await _context.Users.FirstOrDefaultAsync(res => res.Email.Equals(email));
 
                 if (_user == null)
                 {
@@ -286,13 +286,13 @@ namespace INVENTARIO.Controllers
 
         }
         [HttpGet("role/{role}")]
-        public async Task<ActionResult<User>> GetUserByRole(string role)
+        public async Task<ActionResult<Users>> GetUserByRole(string role)
         {
             try
             {
                 var user = await _tokenService.GetUserFromTokenAsync(HttpContext);
 
-                var userList = await _context.User
+                var userList = await _context.Users
                         .Where(u => u.Role == role)
                         .ToListAsync();
 

@@ -23,7 +23,7 @@ namespace INVENTARIO
         {
 
         }
-        public DbSet<User> User { get; set; }
+        public DbSet<Users> Users { get; set; }
         public DbSet<Client> Client { get; set; }
         public DbSet<Entry> Entry { get; set; }
         public DbSet<Output> Output { get; set; }

@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace INVENTARIO.Entity
 {
-    public class User
+    public class Users
     {
         [Key]
         public int UserId { set; get; }

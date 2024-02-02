@@ -15,7 +15,7 @@ namespace INVENTARIO.Services
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task<User> GetUserFromTokenAsync(HttpContext httpContext)
+        public async Task<Users> GetUserFromTokenAsync(HttpContext httpContext)
         {
             string token = httpContext.Request.Headers["Authorization"];
             Console.WriteLine(token);
@@ -36,7 +36,7 @@ namespace INVENTARIO.Services
                 throw new UnauthorizedAccessException("The token isn't valid!");
             }
 
-            return await _context.User
+            return await _context.Users
                 .FirstOrDefaultAsync(res => res.Email.Equals(vtoken[1]) && res.Password.Equals(vtoken[2]));
         }
         public string GenerateToken(string text)
@@ -44,7 +44,7 @@ namespace INVENTARIO.Services
             return _cifrado.EncryptStringAES(text);
         }
 
-        public Task<User> GetUserFromToken(HttpContext httpContext)
+        public Task<Users> GetUserFromToken(HttpContext httpContext)
         {
             throw new NotImplementedException();
         }
