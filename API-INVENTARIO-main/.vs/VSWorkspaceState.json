@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\INVENTARIO",
+    "\\INVENTARIO\\Controllers"
   ],
+  "SelectedNode": "\\INVENTARIO\\Controllers\\userController.cs",
   "PreviewInSolutionExplorer": false
 }

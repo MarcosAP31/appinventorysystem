@@ -1,0 +1,32 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install Dependencies and Build
+      run: |
+        cd apporderingsystem-angular
+        npm install
+        ng build --configuration=production
+
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: https://myappmarcos.azurewebsites.net/  # Reemplaza con el nombre de tu App Service
+        slot-name: production   # Opcional, si usas deployment slots
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0FA237639B22498BA23CAE0126D4162D }}

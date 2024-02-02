@@ -10529,19 +10529,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\user\\.nuget\\packages\\": {}
+    "C:\\Users\\FL\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "projectUniqueName": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
       "projectName": "INVENTARIO",
-      "projectPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
-      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
+      "projectPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+      "packagesPath": "C:\\Users\\FL\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\FL\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -10631,7 +10631,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   },
@@ -10640,7 +10640,7 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "El paquete \"Microsoft.AspNet.WebApi.Core 5.2.9\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net7.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
+      "message": "Package 'Microsoft.AspNet.WebApi.Core 5.2.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
       "libraryId": "Microsoft.AspNet.WebApi.Core",
       "targetGraphs": [
         "net7.0"

@@ -12,7 +12,7 @@ namespace INVENTARIO.Entity
         public string? LastName { set; get; }
         public string? Birthday { set; get; }
         public string? Sex { set; get; }
-        public decimal? Department { set; get; }
+        public string? Department { set; get; }
         public string? Province { set; get; }
         public string? District { set; get; }
         public string? Direction { set; get; }
