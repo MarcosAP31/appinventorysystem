@@ -10,14 +10,14 @@ import { Product } from '../models/product';
 })
 export class StoreService {
   headers = new Headers()
-  API_URI = 'https://localhost:7000/api';
+  API_URI = 'https://myappmarcos.azurewebsites.net/api';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';
   apifamilia = 'https://localhost:7000/api/Familia';
   apiunidadmedida = 'https://localhost:7000/api/Unidadmedida';
   apicategoria = 'https://localhost:7000/api/Categoria';
-  apialmacen = 'https://localhost:7000/api/Almacen';
+  apialmacen = 'https://localhost:7000/api/Almacen';<
   apiarticulo = 'https://localhost:7000/api/Articulo';
   apiusuario = 'https://localhost:7000/api/Usuario'
   apiarea='https://localhost:7000/api/Area'

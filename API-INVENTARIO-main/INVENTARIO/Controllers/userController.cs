@@ -29,7 +29,7 @@ namespace INVENTARIO.Controllers
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
-            defaultConnection= "server = localhost; database = inventory; Integrated Security=True;";
+            defaultConnection= "Server=tcp:appservermarcos.database.windows.net,1433;Initial Catalog=inventory;Persist Security Info=False;User ID=marcos;Password=Amkl-572#$LCVy;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(Users user)

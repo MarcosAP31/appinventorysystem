@@ -30,6 +30,7 @@ string[] origins = CorsOriginAllowed != null ? CorsOriginAllowed.ToArray() : new
 
 builder.Services.AddCors(options =>
 {
+
     options.AddPolicy("CorsPolicy",
         builder => builder
         .WithOrigins(origins)

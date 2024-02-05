@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {}
+    "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {}
   },
   "projects": {
-    "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {
+    "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+        "projectUniqueName": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
         "projectName": "INVENTARIO",
-        "projectPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
-        "packagesPath": "C:\\Users\\FL\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
+        "projectPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\FL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -104,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
