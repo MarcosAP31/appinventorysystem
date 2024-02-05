@@ -1,32 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {}
+    "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {}
   },
   "projects": {
-    "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {
+    "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+        "projectUniqueName": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
         "projectName": "INVENTARIO",
-        "projectPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
-        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "E:\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
+        "projectPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\INVENTARIO.csproj",
+        "packagesPath": "C:\\Users\\FL\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\FL\\Desktop\\applications\\appinventorysystem\\API-INVENTARIO-main\\INVENTARIO\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\FL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -37,8 +37,8 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "AutoMapper": {
               "target": "Package",
@@ -48,13 +48,13 @@
               "target": "Package",
               "version": "[2.46.5, )"
             },
-            "Microsoft.AspNet.WebApi.Core": {
-              "target": "Package",
-              "version": "[5.2.9, )"
-            },
             "Microsoft.AspNetCore.Cors": {
               "target": "Package",
               "version": "[2.2.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Core": {
+              "target": "Package",
+              "version": "[2.2.5, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -104,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
