@@ -27,7 +27,7 @@ jobs:
 
   - task: PublishPipelineArtifact@1
     inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)/dist/APPVIRTUALSTORE'
+      targetPath: '$(Build.SourcesDirectory)/appinventorysystem/apporderingsystem-angular/dist'
       artifact: 'angular-dist'
       publishLocation: 'pipeline'
 
