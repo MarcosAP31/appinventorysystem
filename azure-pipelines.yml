@@ -1,5 +1,5 @@
 trigger:
-- main  # Puedes ajustar la rama según tus necesidades
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -17,7 +17,7 @@ jobs:
 
   - script: |
       cd apporderingsystem-angular
-      npm install
+      npm install --force
       npm run build
     displayName: 'Build Angular App'
 
@@ -44,3 +44,20 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/wwwroot'
       artifactName: 'angular-dist'
       publishLocation: 'Container'
+
+- job: DeployToAzure
+  displayName: 'Deploy to Azure App Service'
+  dependsOn: Deploy
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'CMPDEVRG1US'
+      appType: 'webAppLinux'
+      WebAppName: 'appinventory'
+      packageForLinux: '$(Pipeline.Workspace)/angular-dist'
+      enableCustomDeployment: true
+
+
