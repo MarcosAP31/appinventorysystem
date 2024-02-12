@@ -19,6 +19,7 @@ jobs:
     displayName: 'Install Node.js'
 
   - script: |
+      cd $(Build.SourcesDirectory)/appinventorysystem/apporderingsystem-angular
       npm install -g @angular/cli
       npm install --force
       ng build --configuration=production
