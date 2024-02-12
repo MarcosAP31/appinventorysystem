@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  name: Windows pool DEV
+  vmImage: 'ubuntu-latest'
 
 jobs:
 - job: Build_And_Deploy_Angular
@@ -27,7 +27,7 @@ jobs:
 
   - task: PublishPipelineArtifact@1
     inputs:
-      targetPath: '$(Build.SourcesDirectory)/apporderingsystem-angular/dist/APPVIRTUALSTORE'
+      targetPath: '$(Build.SourcesDirectory)/apporderingsystem-angular/dist'
       artifact: 'angular-dist'
       publishLocation: 'pipeline'
 
