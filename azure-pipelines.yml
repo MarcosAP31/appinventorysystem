@@ -12,7 +12,7 @@ jobs:
 
   - task: UseNode@1
     inputs:
-      versionSpec: '18.x'
+      versionSpec: '20.x'
       addToPath: true
 
   - script: |
