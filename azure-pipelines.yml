@@ -19,7 +19,7 @@ jobs:
       npm run build --configuration=production
     displayName: 'Build Angular App'
 
-  - publish: $(System.DefaultWorkingDirectory)/apporderingsystem-angular/dist
+  - publish: $(System.DefaultWorkingDirectory)/apporderingsystem-angular/dist/APPVIRTUALSTORE
     artifact: AngularApp
     displayName: 'Publish Angular App Artifact'
 
@@ -39,5 +39,5 @@ jobs:
       azureSubscription: 'appServiceConnection'
       appType: 'webApp'
       WebAppName: 'appinventory'
-      packageForLinux: '$(Pipeline.Workspace)'
+      packageForLinux: '$(Pipeline.Workspace)/AngularApp'
     displayName: 'Deploy to Azure App Service'
