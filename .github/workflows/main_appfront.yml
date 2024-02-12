@@ -42,7 +42,7 @@ jobs:
         run: |
           cd apporderingsystem-angular
           npm install --force
-          npm run build
+          npm run build -- --output-path=../wwwroot/
 
       - name: Upload Angular artifact for deployment job
         uses: actions/upload-artifact@v3
