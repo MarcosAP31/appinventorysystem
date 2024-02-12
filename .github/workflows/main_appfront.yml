@@ -70,7 +70,7 @@ jobs:
       - name: Deploy Angular to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'appfront'
+          app-name: 'appfront' 
           slot-name: 'Production'
           package: . # Especificamos la ruta del artefacto Angular
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B7B9CA1F44934D519867D58BB44B6BA7 }}
