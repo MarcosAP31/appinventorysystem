@@ -22,17 +22,29 @@ jobs:
           dotnet-version: '8.x'
           include-prerelease: true
 
-      - name: Build with dotnet
+      - name: Build .NET Core app
         run: dotnet build --configuration Release
 
-      - name: dotnet publish
+      - name: Publish .NET Core app
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Upload artifact for deployment job
+      - name: Upload .NET Core artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: .net-app
+          name: dotnet-app
           path: ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Build Angular app
+        run: |
+          cd apporederingsystem-angular
+          npm install
+          npm run build
+
+      - name: Upload Angular artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: angular-app
+          path: apporederingsystem-angular/dist
 
   deploy:
     runs-on: windows-latest
@@ -42,11 +54,16 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
-      - name: Download artifact from build job
+      - name: Download artifacts from build job
         uses: actions/download-artifact@v3
         with:
-          name: .net-app
-      
+          name: dotnet-app
+          
+      - name: Download Angular artifacts from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: angular-app
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
