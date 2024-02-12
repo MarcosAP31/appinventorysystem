@@ -39,5 +39,5 @@ jobs:
       azureSubscription: 'appServiceConnection'
       appType: 'webApp'
       WebAppName: 'appinventory'
-      packageForLinux: '$(Pipeline.Workspace)/AngularApp/APPVIRTUALSTORE'
+      packageForLinux: '$(Pipeline.Workspace)'
     displayName: 'Deploy to Azure App Service'
