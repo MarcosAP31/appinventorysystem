@@ -67,11 +67,11 @@ export class LoginComponent implements OnInit {
     */
   }
   
-  redirectFromHash() {
+  /*redirectFromHash() {
     if (window.location.hash && window.location.hash === '#/') {
       window.location.replace(window.location.href.replace('#/', ''));
     }
-  }
+  }*/
   submit() {
     // Create a new user with the form data
     const user = new User();

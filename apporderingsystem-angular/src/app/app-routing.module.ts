@@ -11,12 +11,14 @@ import { SecurityGuard } from './security.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: '/login',
     pathMatch: 'full'
   },
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    
+    
   },
   {
     path: 'inicio',
@@ -42,12 +44,12 @@ const routes: Routes = [
   // Agrega una ruta para manejar cualquier otra ruta no definida
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: '/login'
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: false })],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

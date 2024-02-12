@@ -11,6 +11,7 @@ import { Product } from '../models/product';
 export class StoreService {
   headers = new Headers()
   API_URI = 'https://myappmarcos.azurewebsites.net/api';
+  //API_URI = 'https://inventarioapidocker.azurewebsites.net/api';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
   apilocal = 'https://localhost:7000/api/Local';
@@ -57,45 +58,45 @@ export class StoreService {
   getUsers(token: any) {
     // Codificar el token utilizando encodeURIComponent
     const encodedToken = encodeURIComponent(token);
-    return this.http.get(`${this.API_URI}/User?token=${encodedToken}`);
+    return this.http.get(`${this.API_URI}/Users?token=${encodedToken}`);
   }
   getUser(userId: number, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.get(`${this.API_URI}/User/${userId}?token=${encodedToken}`);
+    return this.http.get(`${this.API_URI}/Users/${userId}?token=${encodedToken}`);
   }
   getUserByFullName(fullName: string, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.get(`${this.API_URI}/User/fullname/${fullName}?token=${encodedToken}`);
+    return this.http.get(`${this.API_URI}/Users/fullname/${fullName}?token=${encodedToken}`);
   }
   getUserByEmail(email: string, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.get(`${this.API_URI}/User/email/${email}?token=${encodedToken}`);
+    return this.http.get(`${this.API_URI}/Users/email/${email}?token=${encodedToken}`);
   }
   getUsersByRole(role: string, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.get(`${this.API_URI}/User/role/${role}?token=${encodedToken}`);
+    return this.http.get(`${this.API_URI}/Users/role/${role}?token=${encodedToken}`);
   }
   insertUser(user: User, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.post(`${this.API_URI}/User/insert?token=${encodedToken}`, user,
+    return this.http.post(`${this.API_URI}/Users/insert?token=${encodedToken}`, user,
       { responseType: 'text' });
   }
   updateUser(user: User, token: any) {
     const encodedToken = encodeURIComponent(token);
-    return this.http.put(`${this.API_URI}/User/update?token=${encodedToken}`, user,
+    return this.http.put(`${this.API_URI}/Users/update?token=${encodedToken}`, user,
       { responseType: 'text' });
   }
   deleteUser(userId: number, token: any): Observable<any> {
     const encodedToken = encodeURIComponent(token);
-    return this.http.delete(`${this.API_URI}/User/${userId}?token=${encodedToken}`);
+    return this.http.delete(`${this.API_URI}/Users/${userId}?token=${encodedToken}`);
   }
   login(user: any): Observable<any> {
-    return this.http.post(`${this.API_URI}/User/login`, user,
+    return this.http.post(`${this.API_URI}/Users/login`, user,
       { responseType: 'text' });
   }
   validateLogin(token: any): Observable<any> {
     const encodedToken = encodeURIComponent(token);
-    return this.http.post(`${this.API_URI}/User/validatelogin?token=${encodedToken}`, token,
+    return this.http.post(`${this.API_URI}/Users/validatelogin?token=${encodedToken}`, token,
       { responseType: 'text' });
   }
 

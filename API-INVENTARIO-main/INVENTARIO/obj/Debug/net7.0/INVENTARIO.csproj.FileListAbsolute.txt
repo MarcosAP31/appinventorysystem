@@ -1403,8 +1403,6 @@ C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTAR
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Humanizer.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\MessagePack.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\MessagePack.Annotations.dll
-C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\System.Net.Http.Formatting.dll
-C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\System.Web.Http.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.AspNetCore.Razor.Language.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.Build.dll
@@ -1449,7 +1447,6 @@ C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTAR
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.VisualStudio.Web.CodeGenerators.Mvc.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Newtonsoft.Json.dll
-C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\NuGet.Common.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\NuGet.Configuration.dll
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\NuGet.DependencyResolver.Core.dll
@@ -1669,3 +1666,5 @@ C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTAR
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\obj\Debug\net7.0\INVENTARIO.pdb
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\obj\Debug\net7.0\INVENTARIO.genruntimeconfig.cache
 C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\obj\Debug\net7.0\ref\INVENTARIO.dll
+C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.DotNet.PlatformAbstractions.dll
+C:\Users\FL\Desktop\applications\appinventorysystem\API-INVENTARIO-main\INVENTARIO\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
