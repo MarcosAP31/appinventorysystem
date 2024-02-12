@@ -20,7 +20,7 @@ export class StoreService {
   apicategoria = 'https://localhost:7000/api/Categoria';
   apialmacen = 'https://localhost:7000/api/Almacen';<
   apiarticulo = 'https://localhost:7000/api/Articulo';
-  apiusuario = 'https://localhost:7000/api/Usuario'
+  apiusuario = 'https://localhost:7000/api/Usuario';
   apiarea='https://localhost:7000/api/Area'
   apiarticulotipoinventario='https://localhost:7000/api/ArticuloTipoInventario'
   apiusuarioarea='https://localhost:7000/api/UsuarioArea'

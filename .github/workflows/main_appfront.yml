@@ -68,5 +68,5 @@ jobs:
         with:
           app-name: 'appfront'
           slot-name: 'Production'
-          package: ./angular-app # Especificamos la ruta del artefacto Angular
+          package: ./angular-app/dist # Especificamos la ruta del artefacto Angular
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B7B9CA1F44934D519867D58BB44B6BA7 }}
