@@ -18,7 +18,7 @@ jobs:
   - script: |
       cd apporderingsystem-angular
       npm install --force
-      npm run build
+      npm run build --configuration=production
     displayName: 'Build Angular App'
 
   - task: CopyFiles@2
