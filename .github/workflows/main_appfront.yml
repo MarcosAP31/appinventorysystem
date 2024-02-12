@@ -61,18 +61,12 @@ jobs:
       - name: Download artifacts from build job
         uses: actions/download-artifact@v3
         with:
-          name: dotnet-app
-          
-      - name: Download Angular artifacts from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: angular-app
+          name: angular-app  # Solo descargamos el artefacto de Angular
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy Angular to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'appfront'
           slot-name: 'Production'
-          package: .
+          package: ${{ github.workspace }}/angular-app  # Especificamos la ruta del artefacto Angular
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B7B9CA1F44934D519867D58BB44B6BA7 }}
