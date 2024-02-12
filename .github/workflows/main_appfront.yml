@@ -23,10 +23,14 @@ jobs:
           include-prerelease: true
 
       - name: Build .NET Core app
-        run: dotnet build --configuration Release
+        run: |
+          cd API-INVENTARIO-main
+          dotnet build --configuration Release
 
       - name: Publish .NET Core app
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: |
+          cd API-INVENTARIO-main
+          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload .NET Core artifact for deployment job
         uses: actions/upload-artifact@v3
