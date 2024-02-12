@@ -41,7 +41,7 @@ jobs:
       - name: Build Angular app
         run: |
           cd apporderingsystem-angular
-          npm install
+          npm install --force
           npm run build
 
       - name: Upload Angular artifact for deployment job
