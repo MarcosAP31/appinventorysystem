@@ -44,11 +44,15 @@ jobs:
           npm install --force
           npm run build
 
+          # Mover los archivos desde apporderingsystem-angular/dist a la raíz
+          mv ./dist/* ./
+          rm -r ./dist
+
       - name: Upload Angular artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: angular-app
-          path: apporderingsystem-angular/dist
+          path: .
 
   deploy:
     runs-on: windows-latest
@@ -68,5 +72,5 @@ jobs:
         with:
           app-name: 'appfront'
           slot-name: 'Production'
-          package: ./angular-app/dist # Especificamos la ruta del artefacto Angular
+          package: . # Especificamos la ruta del artefacto Angular
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B7B9CA1F44934D519867D58BB44B6BA7 }}
