@@ -42,7 +42,7 @@ jobs:
         run: |
           cd apporderingsystem-angular
           npm install --force
-          npm run build -- --output-path=../wwwroot/
+          npm run build
 
       - name: Upload Angular artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -68,5 +68,5 @@ jobs:
         with:
           app-name: 'appfront'
           slot-name: 'Production'
-          package: ./wwwroot # Especificamos la ruta del artefacto Angular
+          package: ./angular-app # Especificamos la ruta del artefacto Angular
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B7B9CA1F44934D519867D58BB44B6BA7 }}
