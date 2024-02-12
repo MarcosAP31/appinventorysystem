@@ -54,7 +54,7 @@ jobs:
   - task: AzureRmWebAppDeployment@4
     inputs:
       ConnectionType: 'AzureRM'
-      azureSubscription: 'CMPDEVRG1US'
+      azureSubscription: 'appServiceConnection'
       appType: 'webAppLinux'
       WebAppName: 'appinventory'
       packageForLinux: '$(Pipeline.Workspace)/angular-dist'
