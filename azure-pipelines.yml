@@ -1,63 +1,52 @@
 trigger:
-- main
+- main  # Cambia esto si tu rama principal tiene un nombre diferente
 
 pool:
   vmImage: 'ubuntu-latest'
 
 jobs:
 - job: Build
-  displayName: 'Build Angular App'
+  displayName: 'Build and Publish Artifact'
   steps:
-  - checkout: self
-
-  - task: UseNode@1
+  - task: NodeTool@0
     inputs:
-      versionSpec: '20.11.0'
-      addToPath: true
+      versionSpec: '14.x'
+    displayName: 'Install Node.js'
 
   - script: |
       cd apporderingsystem-angular
       npm install --force
-      ng build --configuration=production
+      npm run build --configuration=production
     displayName: 'Build Angular App'
 
-  - task: CopyFiles@2
+  - task: ArchiveFiles@2
     inputs:
-      sourceFolder: 'apporderingsystem-angular/dist'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/angular-dist'
-    displayName: 'Copy Angular Dist Files'
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apporderingsystem-angular/dist'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
+      replaceExistingArchive: true
+    displayName: 'Archive Angular App'
+
+  - publish: $(Build.ArtifactStagingDirectory)/angular-app.zip
+    artifact: AngularApp
+    displayName: 'Publish Angular App Artifact'
 
 - job: Deploy
-  displayName: 'Deploy Angular App'
+  displayName: 'Deploy to Azure App Service'
   dependsOn: Build
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'windows-latest'
   steps:
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.ArtifactStagingDirectory)/angular-dist'
-      targetFolder: '$(Build.ArtifactStagingDirectory)/wwwroot'
-    displayName: 'Copy Angular Dist Files'
+  - download: current
+    artifact: AngularApp
+    displayName: 'Download Angular App Artifact'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/wwwroot'
-      artifactName: 'angular-dist'
-      publishLocation: 'Container'
-
-- job: DeployToAzure
-  displayName: 'Deploy to Azure App Service'
-  dependsOn: Deploy
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
   - task: AzureRmWebAppDeployment@4
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'appServiceConnection'
-      appType: 'webAppLinux'
+      appType: 'webApp'
       WebAppName: 'appinventory'
-      packageForLinux: '$(Pipeline.Workspace)/angular-dist'
-      enableCustomDeployment: true
-
-
+      packageForLinux: '$(Pipeline.Workspace)/drop/angular-app.zip'
+    displayName: 'Deploy to Azure App Service'
