@@ -6,8 +6,7 @@
 trigger:
 - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+
 
 jobs:
 - job: Build_And_Deploy_Angular
@@ -34,8 +33,7 @@ jobs:
 - job: Deploy_Angular
   displayName: 'Deploy Angular App'
   dependsOn: Build_And_Deploy_Angular
-  pool:
-    vmImage: 'ubuntu-latest'
+  
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   steps:
