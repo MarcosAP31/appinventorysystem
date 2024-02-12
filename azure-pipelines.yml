@@ -53,6 +53,6 @@ jobs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'appServiceConnection'
       appType: 'webAppLinux'
-      WebAppName: appfrontv2
+      WebAppName: 'appinventory'
       packageForLinux: '$(System.ArtifactsDirectory)/angular-dist/**/*.zip'
       runtimeStack: 'NODE|14.x'
