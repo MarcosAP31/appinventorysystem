@@ -19,16 +19,7 @@ jobs:
       npm run build --configuration=production
     displayName: 'Build Angular App'
 
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)/apporderingsystem-angular/dist'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
-      replaceExistingArchive: true
-    displayName: 'Archive Angular App'
-
-  - publish: $(Build.ArtifactStagingDirectory)/angular-app.zip
+  - publish: $(System.DefaultWorkingDirectory)/apporderingsystem-angular/dist
     artifact: AngularApp
     displayName: 'Publish Angular App Artifact'
 
@@ -48,5 +39,5 @@ jobs:
       azureSubscription: 'appServiceConnection'
       appType: 'webApp'
       WebAppName: 'appinventory'
-      packageForLinux: '$(Pipeline.Workspace)/drop/angular-app.zip'
+      packageForLinux: '$(Pipeline.Workspace)/AngularApp'
     displayName: 'Deploy to Azure App Service'
