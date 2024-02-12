@@ -19,7 +19,7 @@ jobs:
     displayName: 'Install Node.js'
 
   - script: |
-      cd $(Build.SourcesDirectory)/appinventorysystem/apporderingsystem-angular
+      cd $(Build.SourcesDirectory)/apporderingsystem-angular
       npm install -g @angular/cli
       npm install --force
       ng build --configuration=production
@@ -27,7 +27,7 @@ jobs:
 
   - task: PublishPipelineArtifact@1
     inputs:
-      targetPath: '$(Build.SourcesDirectory)/appinventorysystem/apporderingsystem-angular/dist/APPVIRTUALSTORE'
+      targetPath: '$(Build.SourcesDirectory)/apporderingsystem-angular/dist/APPVIRTUALSTORE'
       artifact: 'angular-dist'
       publishLocation: 'pipeline'
 
