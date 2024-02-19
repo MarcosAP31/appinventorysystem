@@ -10,7 +10,7 @@ import { Product } from '../models/product';
 })
 export class StoreService {
   headers = new Headers()
-  API_URI = 'https://myappmarcos.azurewebsites.net/api';
+  API_URI = 'https://localhost:7000/api';
   //API_URI = 'https://inventarioapidocker.azurewebsites.net/api';
   /*
   apitipoinventario = 'https://localhost:7000/api/Tipoinventario';
